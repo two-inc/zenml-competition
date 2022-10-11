@@ -1,0 +1,46 @@
+name: Deploy
+
+on: push
+
+concurrency:
+  group: deploy-workflow-${{ !contains( github.ref_name, fromJson('["master", "staging", "release"]') ) && github.ref || github.run_number }}
+  cancel-in-progress: true
+
+jobs:
+  interrogate:
+    runs-on: self-hosted
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run interrogate docstring coverage
+        uses: JackMcKew/python-interrogate-check@v0.1.1
+        with:
+          path: 'src'
+          fail-under: 80
+
+  pytest:
+    runs-on: self-hosted
+    container:
+      image: python:3.9
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install requirements
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r test-requirements.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_PERSONAL_ACCESS_TOKEN }}
+      - name: Run tests
+        run: |
+          export APP_HOME="$GITHUB_WORKSPACE"
+          export PYTHONPATH="$GITHUB_WORKSPACE"
+          export REDIS_ENABLED=False
+          python -m pytest -v --cov=. --cov-report term --cov-report xml:coverage-reports/coverage.xml
+          coverage xml -i
+          - name: Override Coverage Source Path for Sonar
+        run: |
+          sed -i 's/\/__w\/decision-engine\/decision-engine/\/coverage-reports/g' coverage.xml
+          sed -i '/\/coverage-reports/d' coverage.xml
+    
