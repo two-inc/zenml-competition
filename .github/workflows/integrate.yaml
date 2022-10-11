@@ -1,4 +1,4 @@
-name: Deploy
+name: Integrate
 
 on: push
 
@@ -39,8 +39,3 @@ jobs:
           export REDIS_ENABLED=False
           python -m pytest -v --cov=. --cov-report term --cov-report xml:coverage-reports/coverage.xml
           coverage xml -i
-          - name: Override Coverage Source Path for Sonar
-        run: |
-          sed -i 's/\/__w\/decision-engine\/decision-engine/\/coverage-reports/g' coverage.xml
-          sed -i '/\/coverage-reports/d' coverage.xml
-    
