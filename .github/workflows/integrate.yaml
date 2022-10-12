@@ -8,46 +8,46 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-#    interrogate:
-#        runs-on: self-hosted
-#        timeout-minutes: 20
-#        steps:
-#            - name: Checkout repository
-#              uses: actions/checkout@v2
-#            - name: Run interrogate docstring coverage
-#              uses: JackMcKew/python-interrogate-check@v0.1.1
-#              with:
-#                  path: src
-#                  fail-under: 80
-#
-#    pytest:
-#        runs-on: self-hosted
-#        container:
-#            image: python:3.9
-#        steps:
-#            - name: Check out repository code
-#              uses: actions/checkout@v2
-#            - name: Install requirements
-#              run: |
-#                  python3 -m pip install --upgrade pip
-#                  python3 -m pip install -r test-requirements.txt
-#              env:
-#                  GITHUB_TOKEN: ${{ secrets.BOT_PERSONAL_ACCESS_TOKEN }}
-#            - name: Run tests
-#              run: |
-#                  export PYTHONPATH="$GITHUB_WORKSPACE"
-#                  python -m pytest -v --cov=. --cov-report term --cov-report xml:coverage-reports/coverage.xml
-#                  coverage xml -i
-#
-#
-#    black:
-#        runs-on: ubuntu-latest
-#        steps:
-#            - uses: actions/checkout@v2
-#            - uses: psf/black@stable
-#              with:
-#                  src: ./src
-#                  jupyter: true
+    interrogate:
+        runs-on: self-hosted
+        timeout-minutes: 20
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+            - name: Run interrogate docstring coverage
+              uses: JackMcKew/python-interrogate-check@v0.1.1
+              with:
+                  path: src
+                  fail-under: 80
+
+    pytest:
+        runs-on: self-hosted
+        container:
+            image: python:3.9
+        steps:
+            - name: Check out repository code
+              uses: actions/checkout@v2
+            - name: Install requirements
+              run: |
+                  python3 -m pip install --upgrade pip
+                  python3 -m pip install -r test-requirements.txt
+              env:
+                  GITHUB_TOKEN: ${{ secrets.BOT_PERSONAL_ACCESS_TOKEN }}
+            - name: Run tests
+              run: |
+                  export PYTHONPATH="$GITHUB_WORKSPACE"
+                  python -m pytest -v --cov=. --cov-report term --cov-report xml:coverage-reports/coverage.xml
+                  coverage xml -i
+
+
+    black:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: psf/black@stable
+              with:
+                  src: ./src
+                  jupyter: true
 
 
     cml:
@@ -55,28 +55,26 @@ jobs:
         container:
             image: python:3.9
         steps:
-            #- name: Setting up Node for CML
-            #  uses: actions/setup-node@v2
-            #  with:
-            #      node-version: '16'
-            #- name: Setting up CML Action
-            #  uses: iterative/setup-cml@v1
+            - name: Setting up Node for CML
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '16'
+            - name: Setting up CML Action
+              uses: iterative/setup-cml@v1
             - name: Cloning Repository
               uses: actions/checkout@v2
               with:
                   ref: ${{ github.event.pull_request.head.sha }}
-            #- name: Train model
-            #  run: |
-            #      # Your ML workflow goes here
-            #      pip install -r test-requirements.txt
-            #      export PYTHONPATH="$GITHUB_WORKSPACE"
-            #      python src/pipelines/train_pipeline.py
+            - name: Train model
+              run: |
+                  # Your ML workflow goes here
+                  pip install -r test-requirements.txt
+                  export PYTHONPATH="$GITHUB_WORKSPACE"
+                  python src/pipelines/train_pipeline.py
             - name: Create CML report
               env:
                   REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   # Post reports as comments in GitHub PRs
-                  pwd
-                  ls
                   cat src/data/outputs/metrics.txt >> report.md
                   cml comment create report.md

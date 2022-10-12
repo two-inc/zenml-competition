@@ -1,3 +1,0 @@
-f1_score - 0.0
-roc_auc - 0.5
-accuracy - 0.9879188220178796
