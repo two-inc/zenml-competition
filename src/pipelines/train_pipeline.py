@@ -29,8 +29,15 @@ def train_pipeline():
         "accuracy": accuracy_score(y_test, y_pred),
     }
     with open(path.METRICS_PATH, "w") as f:
+        f.write("----------------------------------------\n")
+        f.write(f"Model Type: {clf.__class__.__name__}\n")
+        f.write("----------------------------------------\n")
+        f.write(f"Train Data Length: {len(X_train)}\n")
+        f.write(f"Test Data Length: {len(X_test)}\n")
+        f.write("----------------------------------------\n")
         for key, val in metrics.items():
-            f.write(f"{key} - {val}\n")
+            f.write(f"{key} - {val:2f}\n")
+        f.write("----------------------------------------")
 
 
 if __name__ == "__main__":
