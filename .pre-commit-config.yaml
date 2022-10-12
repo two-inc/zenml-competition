@@ -1,33 +1,38 @@
+---
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
-    hooks:
-    -   id: check-ast
-    -   id: check-json
-    -   id: check-merge-conflict
-    -   id: check-yaml
-    -   id: debug-statements
-    -   id: detect-private-key
-    -   id: end-of-file-fixer
-    -   id: pretty-format-json
-    -   id: name-tests-test
-    -   id: requirements-txt-fixer
-    -   id: trailing-whitespace
--   repo: https://github.com/akaihola/darker
-    rev: 1.4.2
-    hooks:
-    -   id: darker
--   repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.0.1
-    hooks:
-    -   id: reorder-python-imports
--   repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
-    hooks:
-    -   id: flake8
--   repo: https://github.com/PyCQA/bandit
-    rev: 1.7.4
-    hooks:
-    -   id: bandit
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v3.2.0
+      hooks:
+          - id: check-ast
+          - id: check-json
+          - id: check-merge-conflict
+          - id: check-yaml
+          - id: debug-statements
+          - id: detect-private-key
+          - id: end-of-file-fixer
+          - id: pretty-format-json
+          - id: name-tests-test
+          - id: requirements-txt-fixer
+          - id: trailing-whitespace
+    - repo: https://github.com/akaihola/darker
+      rev: 1.4.2
+      hooks:
+          - id: darker
+    - repo: https://github.com/asottile/reorder_python_imports
+      rev: v3.0.1
+      hooks:
+          - id: reorder-python-imports
+    - repo: https://github.com/PyCQA/flake8
+      rev: 5.0.4
+      hooks:
+          - id: flake8
+    - repo: https://github.com/PyCQA/bandit
+      rev: 1.7.4
+      hooks:
+          - id: bandit
+    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+      rev: 0.2.2
+      hooks:
+          - id: yamlfmt
