@@ -46,8 +46,32 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
-    with:
-      src: "./src"
-      jupyter: true
+        with:
+          src: "./src"
+          jupyter: true
 
 
+  run:
+    runs-on: self-hosted
+    container:
+      image: python:3.9
+    steps:
+       - uses: actions/setup-node@v2
+         with:
+           node-version: '16'
+      - uses: iterative/setup-cml@v1
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Train model
+        run: |
+          # Your ML workflow goes here
+          pip install -r test-requirements.txt
+          python src/pipelines/train_pipeline.py
+      - name: Create CML report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Post reports as comments in GitHub PRs
+          cat data/outputs/metrics.txt >> report.md
+          cml comment create report.md
