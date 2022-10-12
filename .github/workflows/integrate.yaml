@@ -76,6 +76,7 @@ jobs:
                   REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   # Post reports as comments in GitHub PRs
-                  echo $pwd
+                  pwd
+                  ls
                   cat src/data/outputs/metrics.txt >> report.md
                   cml comment create report.md
