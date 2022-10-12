@@ -77,4 +77,4 @@ jobs:
               run: |
                   # Post reports as comments in GitHub PRs
                   cat src/data/outputs/metrics.txt >> report.md
-                  cml comment create report.md
+                  cml comment create --pr report.md
