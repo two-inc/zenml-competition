@@ -35,9 +35,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.BOT_PERSONAL_ACCESS_TOKEN }}
             - name: Run tests
               run: |
-                  export APP_HOME="$GITHUB_WORKSPACE"
                   export PYTHONPATH="$GITHUB_WORKSPACE"
-                  export REDIS_ENABLED=False
                   python -m pytest -v --cov=. --cov-report term --cov-report xml:coverage-reports/coverage.xml
                   coverage xml -i
 
@@ -71,6 +69,7 @@ jobs:
               run: |
                   # Your ML workflow goes here
                   pip install -r test-requirements.txt
+                  export PYTHONPATH="$GITHUB_WORKSPACE"
                   python src/pipelines/train_pipeline.py
             - name: Create CML report
               env:
