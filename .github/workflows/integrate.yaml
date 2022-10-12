@@ -51,7 +51,7 @@ jobs:
           jupyter: true
 
 
-  run:
+  cml:
     runs-on: self-hosted
     container:
       image: python:3.9
