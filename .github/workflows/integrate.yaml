@@ -39,3 +39,15 @@ jobs:
           export REDIS_ENABLED=False
           python -m pytest -v --cov=. --cov-report term --cov-report xml:coverage-reports/coverage.xml
           coverage xml -i
+
+
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: psf/black@stable
+    with:
+      src: "./src"
+      jupyter: true
+
+
