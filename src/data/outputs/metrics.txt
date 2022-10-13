@@ -1,0 +1,8 @@
+Model Type: DummyClassifier
+
+Train Data Length: 445982
+Test Data Length: 148661
+
+f1_score - 0.000000
+roc_auc - 0.500000
+accuracy - 0.987919
