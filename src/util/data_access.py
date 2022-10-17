@@ -1,6 +1,10 @@
 import pandas as pd
 from pandas import DataFrame
 
+"""
+Helpers for accessing sample data etc
+"""
+
 BUCKET_URL = "http://storage.googleapis.com/zenmldata/"
 DEFAULT_OBJECT_NAME = "bs140513_032310.csv"
 
