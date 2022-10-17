@@ -18,7 +18,10 @@ def test_load_default_data(mock_urlopen):
     data = load_data()
 
     assert mock_urlopen.call_count == 1
-    assert mock_urlopen.call_args[0][0].full_url == BUCKET_URL+DEFAULT_OBJECT_NAME
+    assert (
+        mock_urlopen.call_args[0][0].full_url
+        == BUCKET_URL + DEFAULT_OBJECT_NAME
+    )
     assert not data.empty
 
 
@@ -29,5 +32,8 @@ def test_load_custom_data(mock_urlopen):
     data = load_data("my_custom_object")
 
     assert mock_urlopen.call_count == 1
-    assert mock_urlopen.call_args[0][0].full_url == BUCKET_URL+"my_custom_object"
+    assert (
+        mock_urlopen.call_args[0][0].full_url
+        == BUCKET_URL + "my_custom_object"
+    )
     assert not data.empty
