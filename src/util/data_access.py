@@ -1,9 +1,23 @@
-import pandas
+import pandas as pd
+from pandas import DataFrame
 
 BUCKET_URL = "***REMOVED***"
 DEFAULT_OBJECT_NAME = "bs140513_032310.csv"
 
 
-def load_data(object_name: str = None):
+def load_data(object_name: str = None) -> DataFrame:
+    """
+    Loads sample data from a GCP bucket.
+    :param object_name: The name of the object within the bucket. If not specified, the default sample data is loaded.
+    :return: A Pandas dataframe
+    """
     object_url = BUCKET_URL + (object_name or DEFAULT_OBJECT_NAME)
-    return pandas.read_csv(object_url)
+    result = pd.read_csv(object_url)
+
+    if not result:
+        raise ValueError(f"Sample data not found")
+
+    if not isinstance(result, DataFrame):
+        raise ValueError(f"Could not load sample data as a DataFrame. Loaded instead as type {result.__class__.__name__}")
+
+    return result
