@@ -18,6 +18,8 @@ def load_data(object_name: str = None) -> DataFrame:
         raise ValueError(f"Sample data not found")
 
     if not isinstance(result, DataFrame):
-        raise ValueError(f"Could not load sample data as a DataFrame. Loaded instead as type {result.__class__.__name__}")
+        raise ValueError(
+            f"Could not load sample data as a DataFrame. Loaded instead as type {result.__class__.__name__}"
+        )
 
     return result
