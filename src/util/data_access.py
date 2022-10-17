@@ -14,7 +14,7 @@ def load_data(object_name: str = None) -> DataFrame:
     object_url = BUCKET_URL + (object_name or DEFAULT_OBJECT_NAME)
     result = pd.read_csv(object_url)
 
-    if not result:
+    if result is None:
         raise ValueError(f"Sample data not found")
 
     if not isinstance(result, DataFrame):
