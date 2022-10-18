@@ -12,9 +12,7 @@ from sklearn.metrics import (
 from sklearn import preprocessing
 from src.util.env import CATEGORICAL_FEATURES
 
-
 logger = get_logger(__name__)
-
 
 @step
 def evaluator(

@@ -1,3 +1,4 @@
+"""Env variables"""
 from typing import List
 
 CATEGORICAL_FEATURES: List[str] = [
