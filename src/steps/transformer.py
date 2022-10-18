@@ -6,16 +6,15 @@ from sklearn.model_selection import train_test_split
 from zenml.steps import Output
 from zenml.steps import step
 
-import pdb
 
 @step()
 def transformer(
-    data: pd.DataFrame
-    ) -> Output(
-    x_train=np.ndarray,
-    x_test=np.ndarray,
-    y_train=np.ndarray,
-    y_test=np.ndarray,
+    data: pd.DataFrame,
+) -> Output(
+    x_train=pd.DataFrame,
+    x_test=pd.DataFrame,
+    y_train=pd.Series,
+    y_test=pd.Series,
 ):
     """Divides data into Train and Test sets.
 
@@ -23,12 +22,18 @@ def transformer(
         data (pd.DataFrame): Raw Input DataFrame for training the Fraud model
 
     Returns:
-        Tuple[np.ndarray]: Train and Test sets
+        Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test sets
     """
     return split_data(data)
 
-def split_data(data: pd.DataFrame) -> Output(
-    X_train = np.ndarray, X_test = np.ndarray, y_train = np.ndarray, y_true = np.ndarray
+
+def split_data(
+    data: pd.DataFrame,
+) -> Output(
+    X_train=pd.DataFrame,
+    X_test=pd.DataFrame,
+    y_train=pd.Series,
+    y_true=pd.Series,
 ):
     """Splits a DataFrame into Train and Test sets
 
@@ -36,12 +41,14 @@ def split_data(data: pd.DataFrame) -> Output(
         data (pd.DataFrame): Data to be split into Train and Test sets
 
     Returns:
-        Tuple[np.ndarray]: Train and Test sets
+        Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test sets
     """
     dataframe = data.copy()
 
-    X = data.drop('fraud', axis = 1).values
-    y = data['fraud'].values
-    X_train, X_test, y_train, y_true = train_test_split(X, y, test_size = 0.2, random_state=42)
+    X = data.drop("fraud", axis=1)
+    y = data["fraud"]
+    X_train, X_test, y_train, y_true = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
     return X_train, X_test, y_train, y_true
