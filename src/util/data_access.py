@@ -1,9 +1,8 @@
-import pandas as pd
-from pandas import DataFrame
-
 """
 Helpers for accessing sample data etc
 """
+import pandas as pd
+from pandas import DataFrame
 
 BUCKET_URL = "***REMOVED***"
 DEFAULT_OBJECT_NAME = "bs140513_032310.csv"
