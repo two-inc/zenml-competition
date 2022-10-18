@@ -30,7 +30,4 @@ def trainer(
         X_train, y_train, categorical_feature=CATEGORICAL_FEATURES
     )
 
-    # model_calib = CalibratedClassifierCV(model, method='isotonic', cv='prefit', n_jobs=-1)
-    # model_calib.fit(X_valid, y_valid)
-
     return model
