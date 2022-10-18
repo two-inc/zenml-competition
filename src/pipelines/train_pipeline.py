@@ -6,9 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
 from src.steps import importer, evaluator, trainer, transformer
-
 from src.util import path
-import pdb
 
 RANDOM_SEED = 0
 
@@ -17,7 +15,7 @@ from zenml.integrations.constants import LIGHTGBM, SKLEARN
 
 
 @pipeline()
-def train_pipeline_(importer, transformer, trainer, evaluator):
+def train_pipeline(importer, transformer, trainer, evaluator):
     """Fraud model Training Pipeline
     Args:
 
@@ -39,7 +37,7 @@ def train_pipeline_(importer, transformer, trainer, evaluator):
 
 
 if __name__ == "__main__":
-    pipeline = train_pipeline_(
+    pipeline = train_pipeline(
         importer.importer(),
         transformer.transformer(),
         trainer.trainer(),
