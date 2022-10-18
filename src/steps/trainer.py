@@ -9,7 +9,6 @@ from zenml.logger import get_logger
 import lightgbm as lgbm
 from src.util.env import CATEGORICAL_FEATURES
 
-
 @step()
 def trainer(
     X_train: pd.DataFrame, y_train: pd.Series
