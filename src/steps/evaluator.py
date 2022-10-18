@@ -14,6 +14,7 @@ from src.util.env import CATEGORICAL_FEATURES
 
 logger = get_logger(__name__)
 
+
 @step
 def evaluator(
     X_test: pd.DataFrame,
