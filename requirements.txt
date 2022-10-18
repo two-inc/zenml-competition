@@ -3,3 +3,4 @@ jupyterlab==3.4.8
 seaborn==0.12.0
 zenml==0.20.2
 scikit-learn==1.1.2
+lightgbm==3.3.2
