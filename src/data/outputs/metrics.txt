@@ -1,0 +1,1 @@
+_OutputArtifact(channel=OutputChannel(artifact_type=BaseArtifact, producer_component_id=evaluator, output_key=output, additional_properties={}, additional_custom_properties={}), materializer_source='zenml.materializers.built_in_materializer.BuiltInContainerMaterializer@zenml_0.20.2')
