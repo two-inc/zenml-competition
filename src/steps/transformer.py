@@ -5,9 +5,11 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from zenml.steps import Output
 from zenml.steps import step
+from src.util import path
+from zenml.integrations.constants import LIGHTGBM
 
 
-@step()
+@step(enable_cache=False)
 def transformer(
     data: pd.DataFrame,
 ) -> Output(
@@ -50,5 +52,10 @@ def split_data(
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
     )
+
+    with open(path.METRICS_PATH, "w") as f:
+        f.write(f"Model Type: {LIGHTGBM}\n")
+        f.write(f"Train Data Length: {len(X_train)}\n")
+        f.write(f"Test Data Length: {len(X_test)}\n\n")
 
     return X_train, X_test, y_train, y_test

@@ -1,16 +1,16 @@
 from src.pipelines.train_pipeline import train_pipeline
-from src.steps import importer
-from src.steps import transformer
-from src.steps import trainer
-from src.steps import evaluator
+from src.steps.importer import importer
+from src.steps.transformer import transformer
+from src.steps.trainer import trainer
+from src.steps.evaluator import evaluator
 
 
 def run_training_pipeline():
     pipeline = train_pipeline(
-        importer.importer(),
-        transformer.transformer(),
-        trainer.trainer(),
-        evaluator.evaluator(),
+        importer(),
+        transformer(),
+        trainer(),
+        evaluator(),
     )
     pipeline.run()
 
