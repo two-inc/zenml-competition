@@ -1,5 +1,4 @@
 Model Type: lightgbm
-
 Train Data Length: 2
 Test Data Length: 2
 
