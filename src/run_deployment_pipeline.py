@@ -126,6 +126,7 @@ def run_deployment_pipeline(
     deployment_trigger: BaseStep, model_deployer: BaseStep
 ) -> None:
     """Initializes a continuous deployment pipeline run"""
+    ## TODO - Replace this CD Pipeline Definition with Actual Training Steps
     deployment = continuous_deployment_pipeline(
         ingest_data=None,  # ingest_data(),
         encode_cat_cols=None,  # encode_cat_cols(),

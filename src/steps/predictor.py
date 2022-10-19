@@ -18,6 +18,8 @@ from zenml.steps import step
 
 logger = get_logger(__name__)
 
+INFERENCE_COLUMNS = []
+
 
 @step
 def predictor(
@@ -31,29 +33,7 @@ def predictor(
     data = json.loads(data)
     data.pop("columns")
     data.pop("index")
-    columns_for_df = [
-        "customerID",
-        "gender",
-        "SeniorCitizen",
-        "Partner",
-        "Dependents",
-        "tenure",
-        "PhoneService",
-        "MultipleLines",
-        "InternetService",
-        "OnlineSecurity",
-        "OnlineBackup",
-        "DeviceProtection",
-        "TechSupport",
-        "StreamingTV",
-        "StreamingMovies",
-        "Contract",
-        "PaperlessBilling",
-        "PaymentMethod",
-        "MonthlyCharges",
-        "TotalCharges",
-    ]
-    df = pd.DataFrame(data["data"], columns=columns_for_df)
+    df = pd.DataFrame(data["data"], columns=INFERENCE_COLUMNS)
     data = np.array(df)
     predictions = service.predict(data)
     predictions = predictions.argmax(axis=-1)
