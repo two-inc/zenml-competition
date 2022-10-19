@@ -28,19 +28,10 @@ def train_pipeline(importer, transformer, trainer, evaluator):
     metrics = evaluator(X_test, y_test, model)
 
     with open(path.METRICS_PATH, "w") as f:
-        f.write(f"Model Type: {LIGHTGBM}\n\n")
+        f.write(f"Model Type: {LIGHTGBM}\n")
         f.write(f"Train Data Length: {len(X_train)}\n")
         f.write(f"Test Data Length: {len(X_test)}\n\n")
         f.write(f"{metrics}")
 
     return metrics
 
-
-if __name__ == "__main__":
-    pipeline = train_pipeline(
-        importer.importer(),
-        transformer.transformer(),
-        trainer.trainer(),
-        evaluator.evaluator(),
-    )
-    pipeline.run()
