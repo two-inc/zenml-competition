@@ -34,4 +34,3 @@ def train_pipeline(importer, transformer, trainer, evaluator):
         f.write(f"{metrics}")
 
     return metrics
-
