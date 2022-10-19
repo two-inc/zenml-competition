@@ -4,6 +4,7 @@ from typing import Dict
 from sklearn.metrics import r2_score
 from zenml.logger import get_logger
 from zenml.steps import step
+from zenml.integrations.constants import LIGHTGBM
 import lightgbm as lgbm
 from sklearn.metrics import (
     roc_auc_score,
@@ -12,11 +13,12 @@ from sklearn.metrics import (
 )
 from sklearn import preprocessing
 from src.util.env import CATEGORICAL_FEATURES
+from src.util import path
 
 logger = get_logger(__name__)
 
 
-@step
+@step(enable_cache=False)
 def evaluator(
     X_test: pd.DataFrame,
     y_test: pd.DataFrame,
@@ -39,12 +41,15 @@ def evaluator(
         )
 
     y_pred_proba = model.predict_proba(X_test)[:, 1]
+
     metric_results = {
         "rocauc": roc_auc_score(y_test, y_pred_proba),
         "prauc": average_precision_score(y_test, y_pred_proba),
         "brier": brier_score_loss(y_test, y_pred_proba),
     }
-
     logger.info(f"Metric Values:\n{metric_results}")
+
+    with open(path.METRICS_PATH, "a") as f:
+        f.write(f"{metric_results}")
 
     return metric_results

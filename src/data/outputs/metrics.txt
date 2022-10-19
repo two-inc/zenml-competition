@@ -1,5 +1,5 @@
 Model Type: lightgbm
-Train Data Length: 2
-Test Data Length: 2
+Train Data Length: 475714
+Test Data Length: 118929
 
-_OutputArtifact(channel=OutputChannel(artifact_type=BaseArtifact, producer_component_id=evaluator, output_key=output, additional_properties={}, additional_custom_properties={}), materializer_source='zenml.materializers.built_in_materializer.BuiltInContainerMaterializer@zenml_0.20.2')
+{'rocauc': 0.7458055845994053, 'prauc': 0.2062743279582854, 'brier': 0.06533034369497467}
