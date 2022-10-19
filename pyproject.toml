@@ -1,3 +1,7 @@
+[project]
+name = 'two-zenml-competition'
+requires-python = ">=3.9"
+
 [tool.black]
 line-length = 79
 include = '\.pyi?$'
