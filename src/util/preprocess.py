@@ -5,13 +5,20 @@ drop_columns = ["zipMerchant", "zipcodeOri"]
 
 
 def preprocess(
-    X: pd.DataFrame, categorical_columns: list[str], drop_columns: list[str]
+    X: pd.DataFrame, cat_columns: list[str], drop_columns: list[str]
 ) -> pd.DataFrame:
     """Preprocesses the 'Synthetic data from a financial payment system' Dataset"""
     X = X.copy()
-    X[cat_columns] = X.loc[:, cat_columns].applymap(lambda x: x.strip("'"))
+    # y = y.copy()
+    X[cat_columns] = (
+        X.loc[:, cat_columns]
+        .applymap(lambda x: x.strip("'"))
+        .astype("category")
+    )
     X = X.drop(drop_columns, axis=1)
-    X = X[X["amount"] > 0]
+    # amount_mask = X['amount'] > 0
+    # X = X[amount_mask]
+    # y = y[amount_mask]
     return X
 
 
