@@ -1,8 +1,5 @@
-Model Type: DummyClassifier
+Model Type: lightgbm
+Train Data Length: 475714
+Test Data Length: 118929
 
-Train Data Length: 445982
-Test Data Length: 148661
-
-f1_score - 0.000000
-roc_auc - 0.500000
-accuracy - 0.987919
+{'rocauc': 0.7458055845994053, 'prauc': 0.2062743279582854, 'brier': 0.06533034369497467}

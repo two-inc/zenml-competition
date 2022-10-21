@@ -4,6 +4,7 @@ from util.data_access import load_data, DEFAULT_OBJECT_NAME, BUCKET_URL
 
 
 def _mock_request(mock_urlopen, response_data):
+    """Mock request"""
     mock_response = Mock()
     mock_response.read.return_value = response_data.encode("utf8")
     mock_handle = mock_urlopen.return_value
@@ -13,6 +14,8 @@ def _mock_request(mock_urlopen, response_data):
 
 @patch("urllib.request.urlopen")
 def test_load_default_data(mock_urlopen):
+    """test_load_default_data"""
+
     _mock_request(mock_urlopen, "A,B,C\n1,2,3")
 
     data = load_data()
@@ -27,6 +30,7 @@ def test_load_default_data(mock_urlopen):
 
 @patch("urllib.request.urlopen")
 def test_load_custom_data(mock_urlopen):
+    """test_load_custom_data"""
     _mock_request(mock_urlopen, "A,B,C\n1,2,3")
 
     data = load_data("my_custom_object")
