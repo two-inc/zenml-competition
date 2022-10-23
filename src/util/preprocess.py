@@ -62,6 +62,23 @@ def get_rolling_sum_by_group(
     )
 
 
+def get_rolling_std_by_group(
+    data: pd.DataFrame,
+    column: str,
+    group: str,
+    window,
+    min_periods,
+    *args,
+    **kwargs,
+) -> pd.Series:
+    return get_grouped_transform(
+        data,
+        column,
+        group,
+        lambda x: x.rolling(window, min_periods, *args, **kwargs).std(),
+    )
+
+
 def get_rolling_max_by_group(
     data: pd.DataFrame,
     column: str,
@@ -165,13 +182,16 @@ def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:
             data[f"{group}_amount_ma_{w}"] = get_rolling_mean_by_group(
                 data, "amount", group, window=window, min_periods=1
             )
+            data[f"{group}_amount_mstd_{w}"] = get_rolling_std_by_group(
+                data, "amount", group, window=window, min_periods=1
+            ).fillna(0)
 
     data["transactions_completed"] = 1
     for group, max_transactions in max_transaction_map.items():
         data[f"{group}_amount_moving_max"] = get_rolling_max_by_group(
             data, "amount", group, window=max_transactions, min_periods=1
         )
-        data[f"{group}_fraud_comitted_mean"] = get_rolling_mean_by_group_lag(
+        data[f"{group}_fraud_commited_mean"] = get_rolling_mean_by_group_lag(
             data,
             "amount",
             group,
