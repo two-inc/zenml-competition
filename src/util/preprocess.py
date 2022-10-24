@@ -1,5 +1,6 @@
 import datetime
 from typing import Callable
+from typing import Protocol
 
 import pandas as pd
 from util import columns
@@ -11,7 +12,7 @@ drop_columns = ["zipMerchant", "zipcodeOri"]
 def preprocess(
     X: pd.DataFrame, cat_columns: list[str], drop_columns: list[str]
 ) -> pd.DataFrame:
-    """Preprocesses the 'Synthetic data from a financial payment system' Dataset"""
+    """Applies simple preprocessing to the 'Synthetic data from a financial payment system' Dataset"""
     X = X.copy()
     X[cat_columns] = (
         X.loc[:, cat_columns]
@@ -25,6 +26,17 @@ def preprocess(
 def get_grouped_transform(
     data: pd.DataFrame, column: str, group: str, func: Callable
 ) -> pd.Series:
+    """Applies a function as a transform on grouped data
+
+    Args:
+        data (pd.DataFrame): Data to use for transform
+        column (str): Feature to apply transform on
+        group (str):  Feature to group data by
+        func (Callable): Function to apply as transform
+
+    Returns:
+        pd.Series: Grouped Transform
+    """
     return data.groupby(group)[column].transform(func)
 
 
@@ -37,6 +49,16 @@ def get_rolling_mean_by_group(
     *args,
     **kwargs,
 ) -> pd.Series:
+    """Computes a rolling mean on grouped data
+
+    Args:
+        data (pd.DataFrame): Data to use for rolling mean computation
+        column (str): Feature to compute rolling mean on
+        group (str):  Feature to group data by
+
+    Returns:
+        pd.Series: Grouped Rolling Mean Transform
+    """
     return get_grouped_transform(
         data,
         column,
@@ -54,6 +76,16 @@ def get_rolling_sum_by_group(
     *args,
     **kwargs,
 ) -> pd.Series:
+    """Computes a rolling sum on grouped data
+
+    Args:
+        data (pd.DataFrame): Data to use for rolling sum computation
+        column (str): Feature to compute rolling sum on
+        group (str):  Feature to group data by
+
+    Returns:
+        pd.Series: Grouped Rolling Sum Transform
+    """
     return get_grouped_transform(
         data,
         column,
@@ -71,6 +103,16 @@ def get_rolling_std_by_group(
     *args,
     **kwargs,
 ) -> pd.Series:
+    """Computes a rolling standard deviation on grouped data
+
+    Args:
+        data (pd.DataFrame): Data to use for rolling standard deviation computation
+        column (str): Feature to compute rolling standard deviation on
+        group (str):  Feature to group data by
+
+    Returns:
+        pd.Series: Grouped Rolling Standard Deviation Transform
+    """
     return get_grouped_transform(
         data,
         column,
@@ -88,6 +130,16 @@ def get_rolling_max_by_group(
     *args,
     **kwargs,
 ) -> pd.Series:
+    """Computes a rolling max on grouped data
+
+    Args:
+        data (pd.DataFrame): Data to use for rolling max computation
+        column (str): Feature to compute rolling max on
+        group (str):  Feature to group data by
+
+    Returns:
+        pd.Series: Grouped Rolling Max Transform
+    """
     return get_grouped_transform(
         data,
         column,
@@ -106,6 +158,16 @@ def get_rolling_mean_by_group_lag(
     *args,
     **kwargs,
 ) -> pd.Series:
+    """Computes a shifted rolling mean on grouped data
+
+    Args:
+        data (pd.DataFrame): Data to use for shifted rolling mean computation
+        column (str): Feature to compute shifted rolling mean on
+        group (str):  Feature to group data by
+
+    Returns:
+        pd.Series: Shifted Grouped Rolling Mean Transform
+    """
     return get_grouped_transform(
         data,
         column,
@@ -117,6 +179,7 @@ def get_rolling_mean_by_group_lag(
 
 
 def get_max_group_count(data: pd.Series) -> int:
+    """Gets the Maximum Value Count for a given Series"""
     return data.value_counts().max()
 
 
@@ -220,3 +283,16 @@ def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:
     )
     data = data.drop(drop_columns, axis=1)
     return data
+
+
+class TreeBasedModel(Protocol):
+    feature_importances_: list[float]
+
+
+def get_feature_importances(
+    model: TreeBasedModel, X_train: pd.DataFrame
+) -> dict[str, float]:
+    """Retrieves the feature importances from a tree-based model by feature"""
+    return {
+        col: f for col, f in zip(X_train.columns, model.feature_importances_)
+    }
