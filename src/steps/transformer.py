@@ -2,8 +2,10 @@
 import pandas as pd
 from zenml.steps import Output
 from zenml.steps import step
-from util import columns
-from util.preprocess import get_preprocessed_data, train_test_split_by_step
+
+from src.util import columns
+from src.util.preprocess import get_preprocessed_data
+from src.util.preprocess import train_test_split_by_step
 
 
 @step(enable_cache=True)
@@ -38,13 +40,12 @@ def transformer(
         data=preprocessed_data,
         step=columns.STEP,
         target=columns.TARGET,
-        train_size=0.8
+        train_size=0.8,
     )
 
     return (
-        X_train.loc[:,columns.MODEL],
-        X_valid.loc[:,columns.MODEL],
+        X_train.loc[:, columns.MODEL],
+        X_valid.loc[:, columns.MODEL],
         y_train,
-        y_valid
+        y_valid,
     )
-

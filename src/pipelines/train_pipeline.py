@@ -5,7 +5,9 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
-from util import path
+
+from src.util import path
+from src.util.settings import docker_settings
 
 RANDOM_SEED = 0
 
@@ -13,7 +15,7 @@ from zenml.pipelines import pipeline
 from zenml.integrations.constants import LIGHTGBM, SKLEARN
 
 
-@pipeline()
+@pipeline(enable_cache=False, settings={"docker": docker_settings})
 def train_pipeline(importer, transformer, trainer, evaluator):
     """Fraud model Training Pipeline
     Args:

@@ -8,7 +8,9 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import roc_auc_score
 
 
-def get_classification_metrics(true: pd.Series, pred: pd.Series, pred_proba: pd.Series) -> dict[str,float]:
+def get_classification_metrics(
+    true: pd.Series, pred: pd.Series, pred_proba: pd.Series
+) -> dict[str, float]:
     """Computes classification metrics
 
     Args:
@@ -31,8 +33,8 @@ def get_classification_metrics(true: pd.Series, pred: pd.Series, pred_proba: pd.
 
 
 LGBM_TRAIN_PARAMS = {
-    'max_depth': -1,
-    'n_estimators' : 200,
-    'num_leaves': 45,
-    'scale_pos_weight': 1
+    "max_depth": -1,
+    "n_estimators": 200,
+    "num_leaves": 45,
+    "scale_pos_weight": 1,
 }

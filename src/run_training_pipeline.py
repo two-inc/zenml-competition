@@ -1,8 +1,8 @@
-from pipelines.train_pipeline import train_pipeline
-from steps.importer import importer
-from steps.transformer import transformer
-from steps.trainer import trainer
-from steps.evaluator import evaluator
+from src.pipelines.train_pipeline import train_pipeline
+from src.steps.evaluator import evaluator
+from src.steps.importer import importer
+from src.steps.trainer import trainer
+from src.steps.transformer import transformer
 
 
 def run_training_pipeline() -> None:

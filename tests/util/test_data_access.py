@@ -1,6 +1,9 @@
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
+from unittest.mock import patch
 
-from util.data_access import load_data, DEFAULT_OBJECT_NAME, BUCKET_URL
+from src.util.data_access import BUCKET_URL
+from src.util.data_access import DEFAULT_OBJECT_NAME
+from src.util.data_access import load_data
 
 
 def _mock_request(mock_urlopen, response_data):

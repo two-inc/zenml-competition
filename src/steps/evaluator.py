@@ -1,10 +1,11 @@
 """Evaluator step"""
+import lightgbm as lgbm
 import pandas as pd
 from zenml.logger import get_logger
 from zenml.steps import step
-import lightgbm as lgbm
-from util.tracking import get_classification_metrics
-from util import path
+
+from src.util import path
+from src.util.tracking import get_classification_metrics
 
 logger = get_logger(__name__)
 
@@ -29,9 +30,7 @@ def evaluator(
     y_pred = model.predict(X_test)
 
     metric_results = get_classification_metrics(
-        true=y_test,
-        pred=y_pred,
-        pred_proba=y_pred_proba
+        true=y_test, pred=y_pred, pred_proba=y_pred_proba
     )
 
     logger.info(f"Metric Values:\n{metric_results}")

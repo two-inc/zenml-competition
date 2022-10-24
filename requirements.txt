@@ -1,21 +1,8 @@
-imblearn>=0.0
+-r docker-requirements.txt
 jupyterlab>=3.4
 kubernetes==18.20.0
-lightgbm>=1.0.0
-mlflow>=1.2.0,<1.26.0
-mlserver>=0.5.3
-mlserver-mlflow>=0.5.3
-numpy>=1
-pandas>=1
 python-dotenv>=0.21.0
-scikit-learn>=1.1.2
 seaborn>=0.12
-seldon-core==1.14.1
 shap>=0.30
 streamlit>=1.12
 tqdm>=4
-zenml>=0.20
-kfp==1.8.13
-gcsfs
-google-cloud-secret-manager
-google-cloud-aiplatform>=1.11.0 

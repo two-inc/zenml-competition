@@ -3,3 +3,6 @@
 tests/
 env/
 *.csv
+.github
+.flake8
+.env.example

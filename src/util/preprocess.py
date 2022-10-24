@@ -1,13 +1,14 @@
-import datetime
 from typing import Callable
 from typing import Protocol
 
 import pandas as pd
-from util import columns
+
+from src.util import columns
 
 cat_columns = ["customer", "age", "gender", "merchant", "category"]
 drop_columns = ["zipMerchant", "zipcodeOri"]
 SEED = 42
+
 
 def print_description(data: pd.Series) -> None:
     """Prints the description of a pandas Series"""
