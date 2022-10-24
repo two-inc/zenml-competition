@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
-from src.util import path
+from util import path
 
 RANDOM_SEED = 0
 
