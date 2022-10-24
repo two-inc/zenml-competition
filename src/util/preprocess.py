@@ -7,6 +7,14 @@ from util import columns
 
 cat_columns = ["customer", "age", "gender", "merchant", "category"]
 drop_columns = ["zipMerchant", "zipcodeOri"]
+SEED = 42
+
+def print_description(data: pd.Series) -> None:
+    """Prints the description of a pandas Series"""
+    print(f"{data.name.title()} Overview")
+    print("--------------")
+    print(data.describe())
+    print("--------------")
 
 
 def preprocess(
@@ -217,10 +225,29 @@ def train_test_split_by_step(
 
 
 def get_column_indices(data: pd.DataFrame, columns: list[str]) -> list[int]:
+    """Gets the indices of the columns on the passed data"""
     return [data.columns.get_loc(i) for i in columns]
 
 
 def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:
+    """Generates the preprocessed Dataset
+
+    In addition to baseline preprocessing, this function is responsible
+    for feature engineering, adding these columns to the raw data:
+        - Customer Transaction Number
+        - Merchant Transaction Number
+        - Moving Averages for the Amount by Customer, Merchant & Category
+        - Moving Standard Deviations for the Amount by Customer, Merchant & Category
+        - Moving Max for the Amount by Customer, Merchant & Category
+        - Proportion of previous fraudulent transactions for Customer, Merchant & Category
+        - Average Amount Paid for a Category of Items the previous Step
+
+    Args:
+        data (pd.DataFrame): Raw Data
+
+    Returns:
+        pd.DataFrame: Preprocessed Data
+    """
     data = data.copy()
     MAX_MERCHANT_TRANSACTIONS = get_max_group_count(data["merchant"])
     MAX_CUSTOMER_TRANSACTIONS = get_max_group_count(data["customer"])

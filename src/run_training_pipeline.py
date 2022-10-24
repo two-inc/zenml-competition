@@ -1,11 +1,12 @@
-from src.pipelines.train_pipeline import train_pipeline
-from src.steps.importer import importer
-from src.steps.transformer import transformer
-from src.steps.trainer import trainer
-from src.steps.evaluator import evaluator
+from pipelines.train_pipeline import train_pipeline
+from steps.importer import importer
+from steps.transformer import transformer
+from steps.trainer import trainer
+from steps.evaluator import evaluator
 
 
-def run_training_pipeline():
+def run_training_pipeline() -> None:
+    """Executes the ZenML train_pipeline"""
     pipeline = train_pipeline(
         importer(),
         transformer(),

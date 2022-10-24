@@ -1,3 +1,5 @@
+"""Defines Column Variables for "Synthetic data from a financial payment system" Dataset"""
+
 DROP: list[str] = ["zipMerchant", "zipcodeOri"]
 
 CATEGORICAL: list[str] = ["category", "gender", "age"]
@@ -9,6 +11,7 @@ TRANSACTION_NUMBERS: list[str] = [
 
 STEP: str = "step"
 AMOUNT: str = "amount"
+TARGET: str = 'fraud'
 
 CUSTOMER_AMOUNT_MAV: list[str] = [
     "customer_amount_ma_total",
