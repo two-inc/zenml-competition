@@ -1,4 +1,6 @@
 """Evaluator step"""
+from typing import Protocol
+
 import lightgbm as lgbm
 import pandas as pd
 from zenml.logger import get_logger
@@ -10,18 +12,28 @@ from src.util.tracking import get_classification_metrics
 logger = get_logger(__name__)
 
 
+class Classifier(Protocol):
+    """Classifier Interface"""
+
+    def predict(*args, **kwargs):
+        ...
+
+    def predict_proba(*args, **kwargs):
+        ...
+
+
 @step(enable_cache=False)
 def evaluator(
     X_test: pd.DataFrame,
     y_test: pd.DataFrame,
-    model: lgbm.LGBMClassifier,
+    model: Classifier,
 ) -> dict[str, float]:
-    """Evaluate a LightGBM using ROC-AUC, PR-AUC & Brier Score.
+    """Evaluate a Classification Model
 
     Args:
         X_test: DataFrame with eval feature data.
         y_test: DataFrame with eval target data.
-        model: Trained LightGBM Classifier.
+        model: Trained Classifier.
 
     Returns:
         dict[str,float]: Metric Results

@@ -4,6 +4,8 @@ Helpers for accessing sample data etc
 import pandas as pd
 from pandas import DataFrame
 
+from src.util import path
+
 BUCKET_URL = "http://storage.googleapis.com/zenmldata/"
 DEFAULT_OBJECT_NAME = "bs140513_032310.csv"
 
@@ -18,7 +20,7 @@ def load_data(object_name: str = None) -> DataFrame:
     result = pd.read_csv(object_url)
 
     if result is None:
-        raise ValueError(f"Sample data not found")
+        raise ValueError("Sample data not found")
 
     if not isinstance(result, DataFrame):
         raise ValueError(

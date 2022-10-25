@@ -13,7 +13,6 @@ repos:
           - id: detect-private-key
           - id: end-of-file-fixer
           - id: pretty-format-json
-          - id: name-tests-test
           - id: requirements-txt-fixer
           - id: trailing-whitespace
     - repo: https://github.com/akaihola/darker
@@ -32,6 +31,7 @@ repos:
       rev: 1.7.4
       hooks:
           - id: bandit
+            exclude: ^tests
     - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
       rev: 0.2.2
       hooks:

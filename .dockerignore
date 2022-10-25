@@ -3,6 +3,7 @@
 tests/
 env/
 *.csv
-.github
+.github/
 .flake8
 .env.example
+vertex-ai.yaml

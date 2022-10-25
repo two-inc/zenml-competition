@@ -7,6 +7,7 @@ from zenml.integrations.constants import MLFLOW
 from zenml.integrations.constants import SCIPY
 from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
+from zenml.integrations.constants import TENSORFLOW
 
 REQUIRED_INTEGRATIONS = [
     SELDON,
@@ -17,6 +18,7 @@ REQUIRED_INTEGRATIONS = [
     KUBERNETES,
     SCIPY,
     GCP,
+    TENSORFLOW,
 ]
 
 
