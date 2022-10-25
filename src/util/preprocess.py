@@ -120,6 +120,9 @@ def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:
         "mean_category_amount_previous_step"
     ] = mean_category_amount_previous_step(data, "category", "step", "amount")
 
+    data = preprocess(data, columns.CATEGORICAL, columns.DROP)
+    return data
+
 
 def preprocess(
     X: pd.DataFrame, cat_columns: list[str], drop_columns: list[str]
