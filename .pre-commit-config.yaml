@@ -31,7 +31,7 @@ repos:
       rev: 1.7.4
       hooks:
           - id: bandit
-            exclude: src/materializer/materializer.py
+            exclude: tests^
     - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
       rev: 0.2.2
       hooks:
