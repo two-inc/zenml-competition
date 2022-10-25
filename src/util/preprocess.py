@@ -214,8 +214,29 @@ def mean_category_amount_previous_step(
 def train_test_split_by_step(
     data: pd.DataFrame, step: str, target: str, train_size: int = 0.8
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """Splits a DataFrame by a discrete step column into train and test sets
+
+    Data splitting procedure specific for the format of the competition
+    dataset. As there is a temporal component, the model should not be tested
+    by testing it on transactions that occurred prior/between the transactions
+    it was originally trained on. This necessitates a temporal splitting of the data
+    according to the step feature.
+
+    Args:
+        data (pd.DataFrame): DataFrame
+        step (str): Step/Day column
+        target (str): Target
+        train_size (int, optional): Size of the training set. Defaults to 0.8.
+
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test Sets
+    """
     data = data.copy()
-    train_step_cutoff = data.loc[:, step].quantile(0.8)
+    if not (0 < train_size < 1):
+        raise ValueError(
+            f"train_size argument must be between 0 and 1. train_size: {train_size}"
+        )
+    train_step_cutoff = data.loc[:, step].quantile(train_size)
     train_idx = data[data.loc[:, step] <= train_step_cutoff].index
     valid_idx = data[data.loc[:, step] > train_step_cutoff].index
     df_train = data.iloc[train_idx, :]
@@ -314,6 +335,7 @@ def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:
 
 
 class TreeBasedModel(Protocol):
+    """Tree-based Model Interface"""
     feature_importances_: list[float]
 
 

@@ -29,7 +29,7 @@ def transformer(
         - First 80% of Days are used for training, rest for evaluation
 
     Args:
-        data (pd.DataFrame): Raw Input DataFrame for training the Fraud model
+        data (pd.DataFrame): Raw Input DataFrame
 
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test sets
