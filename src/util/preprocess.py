@@ -3,6 +3,7 @@ from typing import Protocol
 
 import pandas as pd
 
+from src.materializer.types import TreeBasedModel
 from src.util import columns
 
 cat_columns = ["customer", "age", "gender", "merchant", "category"]
@@ -10,12 +11,114 @@ drop_columns = ["zipMerchant", "zipcodeOri"]
 SEED = 42
 
 
-def print_description(data: pd.Series) -> None:
-    """Prints the description of a pandas Series"""
-    print(f"{data.name.title()} Overview")
-    print("--------------")
-    print(data.describe())
-    print("--------------")
+def train_test_split_by_step(
+    data: pd.DataFrame, step: str, target: str, train_size: int = 0.8
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """Splits a DataFrame by a discrete step column into train and test sets
+
+    Data splitting procedure specific for the format of the competition
+    dataset. As there is a temporal component, the model should not be tested
+    by testing it on transactions that occurred prior/between the transactions
+    it was originally trained on. This necessitates a temporal splitting of the data
+    according to the step feature.
+
+    Args:
+        data (pd.DataFrame): DataFrame
+        step (str): Step/Day column
+        target (str): Target
+        train_size (int, optional): Size of the training set. Defaults to 0.8.
+
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test Sets
+    """
+    data = data.copy()
+    if not (0 < train_size < 1):
+        raise ValueError(
+            f"train_size argument must be between 0 and 1. train_size: {train_size}"
+        )
+    train_step_cutoff = data.loc[:, step].quantile(train_size)
+    train_idx = data[data.loc[:, step] <= train_step_cutoff].index
+    valid_idx = data[data.loc[:, step] > train_step_cutoff].index
+    df_train = data.iloc[train_idx, :]
+    df_test = data.iloc[valid_idx, :]
+    X_train, y_train = df_train.drop(target, axis=1), df_train.loc[:, target]
+    X_test, y_test = df_test.drop(target, axis=1), df_test.loc[:, target]
+    return (X_train, X_test, y_train, y_test)
+
+
+def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:
+    """Generates the preprocessed Dataset
+
+    In addition to baseline preprocessing, this function is responsible
+    for feature engineering, adding these columns to the raw data:
+        - Customer Transaction Number
+        - Merchant Transaction Number
+        - Moving Averages for the Amount by Customer, Merchant & Category
+        - Moving Standard Deviations for the Amount by Customer, Merchant & Category
+        - Moving Max for the Amount by Customer, Merchant & Category
+        - Proportion of previous fraudulent transactions for Customer, Merchant & Category
+        - Average Amount Paid for a Category of Items the previous Step
+
+    Args:
+        data (pd.DataFrame): Raw Data
+
+    Returns:
+        pd.DataFrame: Preprocessed Data
+    """
+    data = data.copy()
+    MAX_MERCHANT_TRANSACTIONS = get_max_group_count(data["merchant"])
+    MAX_CUSTOMER_TRANSACTIONS = get_max_group_count(data["customer"])
+    MAX_CATEGORY_TRANSACTIONS = get_max_group_count(data["category"])
+
+    moving_average_configs = {
+        "merchant": (MAX_MERCHANT_TRANSACTIONS, 50, 10, 5, 3),
+        "customer": (MAX_CUSTOMER_TRANSACTIONS, 10, 5),
+        "category": (MAX_CATEGORY_TRANSACTIONS, 100, 10),
+    }
+
+    max_transaction_map = {
+        "merchant": MAX_MERCHANT_TRANSACTIONS,
+        "customer": MAX_CUSTOMER_TRANSACTIONS,
+        "category": MAX_CATEGORY_TRANSACTIONS,
+    }
+
+    for group, windows in moving_average_configs.items():
+        max_window = max(windows)
+        for window in windows:
+            w = "total" if window == max_window else window
+            data[f"{group}_amount_ma_{w}"] = get_rolling_mean_by_group(
+                data, "amount", group, window=window, min_periods=1
+            )
+            data[f"{group}_amount_mstd_{w}"] = get_rolling_std_by_group(
+                data, "amount", group, window=window, min_periods=1
+            ).fillna(0)
+
+    data["transactions_completed"] = 1
+    for group, max_transactions in max_transaction_map.items():
+        data[f"{group}_amount_moving_max"] = get_rolling_max_by_group(
+            data, "amount", group, window=max_transactions, min_periods=1
+        )
+        data[f"{group}_fraud_commited_mean"] = get_rolling_mean_by_group_lag(
+            data,
+            "amount",
+            group,
+            window=max_transactions,
+            min_periods=1,
+            period_shift=1,
+        )
+        if group != "category":
+            data[f"{group}_transaction_number"] = get_rolling_sum_by_group(
+                data,
+                "transactions_completed",
+                group,
+                window=max_transactions,
+                min_periods=1,
+            )
+
+    ## Amount transacted the day before
+    data[
+        "mean_category_amount_previous_step"
+    ] = mean_category_amount_previous_step(data, "category", "step", "amount")
 
 
 def preprocess(
@@ -211,132 +314,9 @@ def mean_category_amount_previous_step(
     return data["mean_category_amount_previous_step"].fillna(0)
 
 
-def train_test_split_by_step(
-    data: pd.DataFrame, step: str, target: str, train_size: int = 0.8
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Splits a DataFrame by a discrete step column into train and test sets
-
-    Data splitting procedure specific for the format of the competition
-    dataset. As there is a temporal component, the model should not be tested
-    by testing it on transactions that occurred prior/between the transactions
-    it was originally trained on. This necessitates a temporal splitting of the data
-    according to the step feature.
-
-    Args:
-        data (pd.DataFrame): DataFrame
-        step (str): Step/Day column
-        target (str): Target
-        train_size (int, optional): Size of the training set. Defaults to 0.8.
-
-    Returns:
-        tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test Sets
-    """
-    data = data.copy()
-    if not (0 < train_size < 1):
-        raise ValueError(
-            f"train_size argument must be between 0 and 1. train_size: {train_size}"
-        )
-    train_step_cutoff = data.loc[:, step].quantile(train_size)
-    train_idx = data[data.loc[:, step] <= train_step_cutoff].index
-    valid_idx = data[data.loc[:, step] > train_step_cutoff].index
-    df_train = data.iloc[train_idx, :]
-    df_test = data.iloc[valid_idx, :]
-    X_train, y_train = df_train.drop(target, axis=1), df_train.loc[:, target]
-    X_test, y_test = df_test.drop(target, axis=1), df_test.loc[:, target]
-    return (X_train, X_test, y_train, y_test)
-
-
-def get_column_indices(data: pd.DataFrame, columns: list[str]) -> list[int]:
+def get_column_indices(data: pd.DataFrame, cols: list[str]) -> list[int]:
     """Gets the indices of the columns on the passed data"""
-    return [data.columns.get_loc(i) for i in columns]
-
-
-def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:
-    """Generates the preprocessed Dataset
-
-    In addition to baseline preprocessing, this function is responsible
-    for feature engineering, adding these columns to the raw data:
-        - Customer Transaction Number
-        - Merchant Transaction Number
-        - Moving Averages for the Amount by Customer, Merchant & Category
-        - Moving Standard Deviations for the Amount by Customer, Merchant & Category
-        - Moving Max for the Amount by Customer, Merchant & Category
-        - Proportion of previous fraudulent transactions for Customer, Merchant & Category
-        - Average Amount Paid for a Category of Items the previous Step
-
-    Args:
-        data (pd.DataFrame): Raw Data
-
-    Returns:
-        pd.DataFrame: Preprocessed Data
-    """
-    data = data.copy()
-    MAX_MERCHANT_TRANSACTIONS = get_max_group_count(data["merchant"])
-    MAX_CUSTOMER_TRANSACTIONS = get_max_group_count(data["customer"])
-    MAX_CATEGORY_TRANSACTIONS = get_max_group_count(data["category"])
-
-    moving_average_configs = {
-        "merchant": (MAX_MERCHANT_TRANSACTIONS, 50, 10, 5, 3),
-        "customer": (MAX_CUSTOMER_TRANSACTIONS, 10, 5),
-        "category": (MAX_CATEGORY_TRANSACTIONS, 100, 10),
-    }
-
-    max_transaction_map = {
-        "merchant": MAX_MERCHANT_TRANSACTIONS,
-        "customer": MAX_CUSTOMER_TRANSACTIONS,
-        "category": MAX_CATEGORY_TRANSACTIONS,
-    }
-
-    for group, windows in moving_average_configs.items():
-        max_window = max(windows)
-        for window in windows:
-            w = "total" if window == max_window else window
-            data[f"{group}_amount_ma_{w}"] = get_rolling_mean_by_group(
-                data, "amount", group, window=window, min_periods=1
-            )
-            data[f"{group}_amount_mstd_{w}"] = get_rolling_std_by_group(
-                data, "amount", group, window=window, min_periods=1
-            ).fillna(0)
-
-    data["transactions_completed"] = 1
-    for group, max_transactions in max_transaction_map.items():
-        data[f"{group}_amount_moving_max"] = get_rolling_max_by_group(
-            data, "amount", group, window=max_transactions, min_periods=1
-        )
-        data[f"{group}_fraud_commited_mean"] = get_rolling_mean_by_group_lag(
-            data,
-            "amount",
-            group,
-            window=max_transactions,
-            min_periods=1,
-            period_shift=1,
-        )
-        if group != "category":
-            data[f"{group}_transaction_number"] = get_rolling_sum_by_group(
-                data,
-                "transactions_completed",
-                group,
-                window=max_transactions,
-                min_periods=1,
-            )
-
-    ## Amount transacted the day before
-    data[
-        "mean_category_amount_previous_step"
-    ] = mean_category_amount_previous_step(data, "category", "step", "amount")
-
-    data[columns.CATEGORICAL] = (
-        data.loc[:, columns.CATEGORICAL]
-        .applymap(lambda x: x.strip("'"))
-        .astype("category")
-    )
-    data = data.drop(drop_columns, axis=1)
-    return data
-
-
-class TreeBasedModel(Protocol):
-    """Tree-based Model Interface"""
-    feature_importances_: list[float]
+    return [data.columns.get_loc(i) for i in cols]
 
 
 def get_feature_importances(
@@ -346,3 +326,11 @@ def get_feature_importances(
     return {
         col: f for col, f in zip(X_train.columns, model.feature_importances_)
     }
+
+
+def print_description(data: pd.Series) -> None:
+    """Prints the description of a pandas Series"""
+    print(f"{data.name.title()} Overview")
+    print("--------------")
+    print(data.describe())
+    print("--------------")

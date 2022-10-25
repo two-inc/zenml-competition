@@ -1,32 +1,21 @@
 """Evaluator step"""
-from typing import Protocol
-
 import lightgbm as lgbm
 import pandas as pd
 from zenml.logger import get_logger
 from zenml.steps import step
 
+from src.materializer.types import Classifier
 from src.util import path
 from src.util.tracking import get_classification_metrics
 
 logger = get_logger(__name__)
 
 
-class Classifier(Protocol):
-    """Classifier Interface"""
-
-    def predict(*args, **kwargs):
-        ...
-
-    def predict_proba(*args, **kwargs):
-        ...
-
-
 @step(enable_cache=False)
 def evaluator(
     X_test: pd.DataFrame,
     y_test: pd.DataFrame,
-    model: Classifier,
+    model: lgbm.LGBMClassifier,
 ) -> dict[str, float]:
     """Evaluate a Classification Model
 

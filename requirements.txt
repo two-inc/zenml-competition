@@ -2,6 +2,7 @@
 jupyterlab>=3.4
 kubernetes==18.20.0
 python-dotenv>=0.21.0
+scikit-optimize==0.9
 seaborn>=0.12
 shap>=0.30
 streamlit>=1.12
