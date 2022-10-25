@@ -161,3 +161,8 @@ cython_debug/
 
 #ZenML
 .zen
+
+# Project
+deploy.yaml
+connect.yaml
+vertex-ai.yaml
