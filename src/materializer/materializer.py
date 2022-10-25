@@ -4,7 +4,7 @@ from typing import Any
 from typing import Type
 from typing import Union
 
-import lgbm as lgb
+import lightgbm as lgb
 import numpy as np
 import pandas as pd
 from sklearn.calibration import CalibratedClassifierCV
@@ -17,8 +17,8 @@ from src.materializer import types
 DEFAULT_FILENAME = "SyntheticFinancialData"
 
 
-class ScorecardMaterializer(BaseMaterializer):
-    """Custom materializer for the Two UK Scorecard"""
+class CompetitionMaterializer(BaseMaterializer):
+    """Custom materializer for the Two ZenML Competition Submission"""
 
     ASSOCIATED_TYPES = [
         str,
