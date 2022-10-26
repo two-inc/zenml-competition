@@ -10,7 +10,7 @@ from src.util.settings import docker_settings
 logger = get_logger(__name__)
 
 
-@pipeline(enable_cache=False, settings={"docker": docker_settings})
+@pipeline(enable_cache=True, settings={"docker": docker_settings})
 def inference_pipeline(
     dynamic_importer,
     prediction_service_loader,

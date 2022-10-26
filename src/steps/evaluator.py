@@ -36,8 +36,8 @@ def evaluator(
 
     logger.info(f"Metric Values:\n{metric_results}")
 
-    # path.METRICS_PATH.touch(exist_ok=True)
-    # with open(path.METRICS_PATH, "a") as f:
-    #    f.write(f"{metric_results}")
+    path.METRICS_PATH.touch(exist_ok=True)
+    with open(path.METRICS_PATH, "a") as f:
+        f.write(f"{metric_results}")
 
     return metric_results

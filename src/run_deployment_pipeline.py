@@ -62,7 +62,6 @@ def main(
     deployer_step_name = "seldon_model_deployer_step"
 
     seldon_implementation = "LIGHTGBM_SERVER"
-    model_deployer = SeldonModelDeployer.get_active_model_deployer()
 
     if deploy:
         deployment_trigger_ = deployment_trigger(
