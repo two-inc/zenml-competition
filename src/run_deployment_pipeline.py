@@ -17,14 +17,12 @@ from src.pipelines.deployment_pipeline import DeploymentTriggerConfig
 from src.pipelines.deployment_pipeline import dynamic_importer
 from src.pipelines.deployment_pipeline import SeldonDeploymentLoaderStepConfig
 from src.pipelines.inference_pipeline import inference_pipeline
+from src.steps.evaluator import evaluator
+from src.steps.importer import importer
 from src.steps.prediction_service_loader import prediction_service_loader
 from src.steps.predictor import predictor
-
-# from steps.data_process import drop_cols, encode_cat_cols
-# from steps.data_splitter import data_splitter
-# from steps.evaluation import evaluation
-# from steps.ingest_data import ingest_data
-# from steps.trainer import model_trainer
+from src.steps.trainer import trainer
+from src.steps.transformer import transformer
 
 logger = get_logger(__name__)
 
@@ -34,43 +32,46 @@ logger = get_logger(__name__)
     "--deploy",
     "-d",
     is_flag=True,
+    default=False,
     help="Run the deployment pipeline to train and deploy a model",
 )
 @click.option(
     "--predict",
     "-p",
     is_flag=True,
+    default=False,
     help="Run the inference pipeline to send a prediction request "
     "to the deployed model",
 )
 @click.option(
-    "--min-accuracy",
-    default=0.50,
-    help="Minimum accuracy required to deploy the model (default: 0.50)",
+    "--min-f1",
+    default=0.8,
+    help="Minimum F1 Score required to deploy the model (default: 0.8)",
 )
 def main(
     deploy: bool,
     predict: bool,
-    min_accuracy: float,
+    min_f1: float,
 ):
     """Run the Seldon example continuous deployment or inference pipeline
     Example usage:
-        python run.py --deploy --predict --min-accuracy 0.50
+        python run.py --deploy --predict --min-f1 0.8
     """
     model_name = "model"
     deployment_pipeline_name = "continuous_deployment_pipeline"
     deployer_step_name = "seldon_model_deployer_step"
 
-    seldon_implementation = "SKLEARN_SERVER"
+    seldon_implementation = "LIGHTGBM_SERVER"
+    model_deployer = SeldonModelDeployer.get_active_model_deployer()
 
     if deploy:
         deployment_trigger_ = deployment_trigger(
             config=DeploymentTriggerConfig(
-                min_accuracy=min_accuracy,
+                min_f1_score=min_f1,
             )
         )
         model_deployer = seldon_model_deployer_step(
-            config=SeldonDeployerStepParameters(
+            params=SeldonDeployerStepParameters(
                 service_config=SeldonDeploymentConfig(
                     model_name=model_name,
                     replicas=1,
@@ -79,7 +80,7 @@ def main(
                 timeout=120,
             )
         )
-        deploy(deployment_trigger_, model_deployer)
+        run_deployment_pipeline(deployment_trigger_, model_deployer)
 
     if predict:
         prediction_service_loader_ = prediction_service_loader(
@@ -127,14 +128,11 @@ def run_deployment_pipeline(
     deployment_trigger: BaseStep, model_deployer: BaseStep
 ) -> None:
     """Initializes a continuous deployment pipeline run"""
-    ## TODO - Replace this CD Pipeline Definition with Actual Training Steps
     deployment = continuous_deployment_pipeline(
-        ingest_data=None,  # ingest_data(),
-        encode_cat_cols=None,  # encode_cat_cols(),
-        drop_cols=None,  # drop_cols(),
-        data_splitter=None,  # data_splitter(),
-        model_trainer=None,  # model_trainer(),
-        evaluator=None,  # evaluation(),
+        importer=importer(),
+        transformer=transformer(),
+        trainer=trainer(),
+        evaluator=evaluator(),
         deployment_trigger=deployment_trigger,
         model_deployer=model_deployer,
     )
