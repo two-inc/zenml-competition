@@ -1,9 +1,9 @@
 -r docker-requirements.txt
-jupyterlab>=3.4
+jupyterlab==3.5.0
 kubernetes==18.20.0
-python-dotenv>=0.21.0
+python-dotenv==0.21.0
 scikit-optimize==0.9
-seaborn>=0.12
-shap>=0.30
-streamlit>=1.12
-tqdm>=4
+seaborn==0.12.1
+shap==0.39.0
+streamlit==1.13.0
+tqdm==4.64.1

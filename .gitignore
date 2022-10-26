@@ -166,3 +166,4 @@ cython_debug/
 deploy.yaml
 connect.yaml
 vertex-ai.yaml
+src/data/outputs/metrics.txt
