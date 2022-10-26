@@ -35,7 +35,7 @@ class DeploymentTriggerConfig(BaseParameters):
     min_f1_score: float
 
 
-@step
+@step(enable_cache=False)
 def deployment_trigger(
     metrics: dict[str, str],
     config: DeploymentTriggerConfig,
@@ -62,7 +62,7 @@ class SeldonDeploymentLoaderStepConfig(BaseParameters):
     model_name: str
 
 
-@pipeline(enable_cache=False, settings={"docker": docker_settings})
+@pipeline(enable_cache=True, settings={"docker": docker_settings})
 def continuous_deployment_pipeline(
     importer,
     transformer,
