@@ -4,8 +4,6 @@ from typing import cast
 
 import numpy as np
 import pandas as pd
-from util.path import TRAIN_DATA_PATH
-from util.settings import docker_settings
 from zenml.integrations.constants import LIGHTGBM
 from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
@@ -17,6 +15,9 @@ from zenml.pipelines import pipeline
 from zenml.steps import BaseParameters
 from zenml.steps import Output
 from zenml.steps import step
+
+from src.util.path import TRAIN_DATA_PATH
+from src.util.settings import docker_settings
 
 logger = get_logger(__name__)
 
