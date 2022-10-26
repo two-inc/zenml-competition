@@ -2,15 +2,7 @@
 from typing import cast
 
 import click
-from pipelines.deployment_pipeline import continuous_deployment_pipeline
-from pipelines.deployment_pipeline import deployment_trigger
-from pipelines.deployment_pipeline import DeploymentTriggerConfig
-from pipelines.deployment_pipeline import dynamic_importer
-from pipelines.deployment_pipeline import SeldonDeploymentLoaderStepConfig
-from pipelines.inference_pipeline import inference_pipeline
 from rich import print
-from steps.prediction_service_loader import prediction_service_loader
-from steps.predictor import predictor
 from zenml.integrations.seldon.model_deployers import SeldonModelDeployer
 from zenml.integrations.seldon.services import SeldonDeploymentConfig
 from zenml.integrations.seldon.services import SeldonDeploymentService
@@ -18,6 +10,15 @@ from zenml.integrations.seldon.steps import seldon_model_deployer_step
 from zenml.integrations.seldon.steps import SeldonDeployerStepParameters
 from zenml.logger import get_logger
 from zenml.steps import BaseStep
+
+from src.pipelines.deployment_pipeline import continuous_deployment_pipeline
+from src.pipelines.deployment_pipeline import deployment_trigger
+from src.pipelines.deployment_pipeline import DeploymentTriggerConfig
+from src.pipelines.deployment_pipeline import dynamic_importer
+from src.pipelines.deployment_pipeline import SeldonDeploymentLoaderStepConfig
+from src.pipelines.inference_pipeline import inference_pipeline
+from src.steps.prediction_service_loader import prediction_service_loader
+from src.steps.predictor import predictor
 
 # from steps.data_process import drop_cols, encode_cat_cols
 # from steps.data_splitter import data_splitter

@@ -1,0 +1,12 @@
+*.md
+*.toml
+tests/
+env/
+*.csv
+.github/
+.flake8
+.env.example
+vertex-ai.yaml
+connect.yaml
+deploy.yaml
+src/data/outputs/metrics.txt

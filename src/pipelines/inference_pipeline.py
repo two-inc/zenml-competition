@@ -2,9 +2,10 @@
 import json
 from typing import cast
 
-from util.settings import docker_settings
 from zenml.logger import get_logger
 from zenml.pipelines import pipeline
+
+from src.util.settings import docker_settings
 
 logger = get_logger(__name__)
 
