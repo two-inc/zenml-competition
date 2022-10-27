@@ -15,7 +15,10 @@ from src.util.tracking import LGBM_TRAIN_PARAMS
 experiment_tracker = Client().active_stack.experiment_tracker
 
 
-@step(experiment_tracker=experiment_tracker.name)
+@step(
+    enable_cache=False,
+    experiment_tracker=experiment_tracker.name
+)
 def trainer(
     X_train: pd.DataFrame, y_train: pd.Series
 ) -> Output(model=lgbm.LGBMClassifier):

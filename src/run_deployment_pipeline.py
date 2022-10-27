@@ -17,6 +17,7 @@ from src.pipelines.deployment_pipeline import DeploymentTriggerConfig
 from src.pipelines.deployment_pipeline import dynamic_importer
 from src.pipelines.deployment_pipeline import SeldonDeploymentLoaderStepConfig
 from src.pipelines.inference_pipeline import inference_pipeline
+from src.run_training_pipeline import ge_validator_step
 from src.steps.evaluator import evaluator
 from src.steps.importer import importer
 from src.steps.prediction_service_loader import prediction_service_loader
@@ -55,7 +56,7 @@ def main(
 ):
     """Run the Seldon example continuous deployment or inference pipeline
     Example usage:
-        python run.py --deploy --predict --min-f1 0.8
+        python src/run_deployment_pipeline.py --deploy --predict --min-f1 0.8
     """
     model_name = "model"
     deployment_pipeline_name = "continuous_deployment_pipeline"
@@ -129,6 +130,7 @@ def run_deployment_pipeline(
     """Initializes a continuous deployment pipeline run"""
     deployment = continuous_deployment_pipeline(
         importer=importer(),
+        validator=ge_validator_step,
         transformer=transformer(),
         trainer=trainer(),
         evaluator=evaluator(),
