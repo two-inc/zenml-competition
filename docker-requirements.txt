@@ -1,6 +1,7 @@
 gcsfs==2022.10.0
 google-cloud-aiplatform==1.18.2
 google-cloud-secret-manager==2.12.6
+great_expectations==0.15.28
 kfp==1.8.13
 lightgbm==3.3.3
 mlflow==1.25.1

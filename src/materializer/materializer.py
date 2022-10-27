@@ -26,13 +26,16 @@ class CompetitionMaterializer(BaseMaterializer):
         pd.Series,
         pd.DataFrame,
         lgb.LGBMClassifier,
+        bool,
     ]
 
     ASSOCIATED_ARTIFACT_TYPES = (DataArtifact,)
 
     def handle_input(
         self, data_type: Type[Any]
-    ) -> Union[str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier]:
+    ) -> Union[
+        str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier, bool
+    ]:
         """
         Loads the model from the artifact and returns it.
         Args:
@@ -47,7 +50,7 @@ class CompetitionMaterializer(BaseMaterializer):
     def handle_return(
         self,
         obj: Union[
-            str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier
+            str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier, bool
         ],
     ) -> None:
         """

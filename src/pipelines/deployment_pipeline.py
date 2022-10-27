@@ -8,6 +8,12 @@ from zenml.integrations.constants import LIGHTGBM
 from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
 from zenml.integrations.constants import XGBOOST
+from zenml.integrations.great_expectations.steps import (
+    great_expectations_validator_step,
+)
+from zenml.integrations.great_expectations.steps import (
+    GreatExpectationsValidatorParameters,
+)
 from zenml.integrations.seldon.model_deployers import SeldonModelDeployer
 from zenml.integrations.seldon.services import SeldonDeploymentService
 from zenml.logger import get_logger
@@ -62,9 +68,25 @@ class SeldonDeploymentLoaderStepConfig(BaseParameters):
     model_name: str
 
 
-@pipeline(enable_cache=True, settings={"docker": docker_settings})
+# instantiate a builtin Great Expectations data validation step
+ge_validator_params = GreatExpectationsValidatorParameters(
+    expectation_suite_name="",
+    data_asset_name="breast_cancer_test_df",
+)
+ge_validator_step = great_expectations_validator_step(
+    step_name="ge_validator_step",
+    params=ge_validator_params,
+)
+
+
+@pipeline(
+    name="continuous_deployment_pipeline_2",
+    enable_cache=True,
+    settings={"docker": docker_settings},
+)
 def continuous_deployment_pipeline(
     importer,
+    validator,
     transformer,
     trainer,
     evaluator,
@@ -72,7 +94,8 @@ def continuous_deployment_pipeline(
     model_deployer,
 ):
     """Trains a Model and deploys it conditional on the successful execution of the deployment trigger"""
-    df = importer()
+    df, validate_data = importer()
+    _ = validator(df, validate_data)
     X_train, X_test, y_train, y_test = transformer(df)
     model = trainer(X_train, y_train)
     metrics = evaluator(X_test, y_test, model)
