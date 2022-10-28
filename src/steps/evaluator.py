@@ -3,15 +3,19 @@ import lightgbm as lgbm
 import pandas as pd
 from zenml.logger import get_logger
 from zenml.steps import step
+from zenml.client import Client
 
 from src.materializer.types import Classifier
 from src.util import path
 from src.util.tracking import get_classification_metrics
+import mlflow
 
 logger = get_logger(__name__)
 
+experiment_tracker = Client().active_stack.experiment_tracker
 
-@step(enable_cache=False)
+
+@step(enable_cache=False, experiment_tracker=experiment_tracker.name)
 def evaluator(
     X_test: pd.DataFrame,
     y_test: pd.DataFrame,
@@ -35,6 +39,8 @@ def evaluator(
     )
 
     logger.info(f"Metric Values:\n{metric_results}")
+    mlflow.log_metrics(metric_results)
+    
 
     path.METRICS_PATH.touch(exist_ok=True)
     with open(path.METRICS_PATH, "a") as f:
