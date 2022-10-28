@@ -14,6 +14,7 @@ from src.util.tracking import LGBM_TRAIN_PARAMS
 
 experiment_tracker = Client().active_stack.experiment_tracker
 
+
 @step(experiment_tracker=experiment_tracker.name)
 def trainer(
     X_train: pd.DataFrame, y_train: pd.Series
@@ -22,9 +23,8 @@ def trainer(
     model = lgbm.LGBMClassifier(
         **LGBM_TRAIN_PARAMS, random_state=SEED, n_jobs=-1
     )
-    mlflow.log_param("model_type",model.__class__.__name__)
+    mlflow.log_param("model_type", model.__class__.__name__)
     mlflow.log_params(LGBM_TRAIN_PARAMS)
-
 
     model.fit(
         X_train,
