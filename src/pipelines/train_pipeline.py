@@ -9,7 +9,7 @@ from src.util.settings import docker_settings
 
 @pipeline(
     name="train_pipeline_3",
-    enable_cache=True,
+    enable_cache=False,
     settings={"docker": docker_settings},
 )
 def train_pipeline(
@@ -24,7 +24,7 @@ def train_pipeline(
     df, validate_data = importer()
     X_train, X_test, y_train, y_test = transformer(df)
     profiler(X_train)
-    validator(X_test, validate_data)
+    validator(X_train, validate_data)
     model = trainer(X_train, y_train)
     metrics = evaluator(X_test, y_test, model)
 
