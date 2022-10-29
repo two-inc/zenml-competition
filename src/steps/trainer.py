@@ -2,6 +2,7 @@
 import lightgbm as lgbm
 import pandas as pd
 import mlflow
+from sklearn.dummy import DummyClassifier
 from zenml.steps import Output
 from zenml.steps import step
 from zenml.client import Client
@@ -21,18 +22,16 @@ experiment_tracker = Client().active_stack.experiment_tracker
 )
 def trainer(
     X_train: pd.DataFrame, y_train: pd.Series
-) -> Output(model=lgbm.LGBMClassifier):
+) -> Output(model=DummyClassifier):
     """Trains a LightGBM Model"""
-    model = lgbm.LGBMClassifier(
-        **LGBM_TRAIN_PARAMS, random_state=SEED, n_jobs=-1
-    )
+    params = {}
+    model = DummyClassifier(**params)
     mlflow.log_param("model_type", model.__class__.__name__)
-    mlflow.log_params(LGBM_TRAIN_PARAMS)
+    mlflow.log_params(params)
 
     model.fit(
-        X_train,
-        y_train,
-        categorical_feature=get_column_indices(X_train, columns.CATEGORICAL),
+        X_train.fillna(0),
+        y_train.fillna(0),
     )
 
     return model

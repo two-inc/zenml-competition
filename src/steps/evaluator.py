@@ -1,6 +1,7 @@
 """Evaluator step"""
 import lightgbm as lgbm
 import pandas as pd
+from sklearn.dummy import DummyClassifier
 from zenml.logger import get_logger
 from zenml.steps import step
 from zenml.client import Client
@@ -19,7 +20,7 @@ experiment_tracker = Client().active_stack.experiment_tracker
 def evaluator(
     X_test: pd.DataFrame,
     y_test: pd.DataFrame,
-    model: lgbm.LGBMClassifier,
+    model: DummyClassifier,
 ) -> dict[str, float]:
     """Evaluate a Classification Model
 

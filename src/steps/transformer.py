@@ -44,8 +44,8 @@ def transformer(
     )
 
     return (
-        X_train.loc[:, columns.MODEL],
-        X_valid.loc[:, columns.MODEL],
+        X_train.loc[:, columns.NUMERICAL],
+        X_valid.loc[:, columns.NUMERICAL],
         y_train,
         y_valid,
     )
