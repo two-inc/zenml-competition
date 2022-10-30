@@ -1,15 +1,15 @@
 """Evaluator step"""
-import lightgbm as lgbm
+import mlflow
 import pandas as pd
-from sklearn.dummy import DummyClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.experimental import enable_hist_gradient_boosting
+from zenml.client import Client
 from zenml.logger import get_logger
 from zenml.steps import step
-from zenml.client import Client
 
 from src.materializer.types import Classifier
 from src.util import path
 from src.util.tracking import get_classification_metrics
-import mlflow
 
 logger = get_logger(__name__)
 
@@ -20,7 +20,7 @@ experiment_tracker = Client().active_stack.experiment_tracker
 def evaluator(
     X_test: pd.DataFrame,
     y_test: pd.DataFrame,
-    model: DummyClassifier,
+    model: HistGradientBoostingClassifier,
 ) -> dict[str, float]:
     """Evaluate a Classification Model
 
