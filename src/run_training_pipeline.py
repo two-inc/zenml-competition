@@ -1,3 +1,4 @@
+from google.cloud import storage
 from zenml.integrations.great_expectations.steps import (
     great_expectations_profiler_step,
 )
@@ -12,14 +13,14 @@ from zenml.integrations.great_expectations.steps import (
 )
 from zenml.logger import get_logger
 
-logger = get_logger(__name__)
-from google.cloud import storage
 from src.materializer.materializer import CompetitionMaterializer
 from src.pipelines.train_pipeline import train_pipeline
 from src.steps.evaluator import evaluator
 from src.steps.importer import importer
 from src.steps.trainer import trainer
 from src.steps.transformer import transformer
+
+logger = get_logger(__name__)
 
 # instantiate a builtin Great Expectations data profiling step
 ge_profiler_params = GreatExpectationsProfilerParameters(
@@ -45,9 +46,6 @@ ge_validator_step = great_expectations_validator_step(
 
 def run_training_pipeline() -> None:
     """Executes the ZenML train_pipeline"""
-    storage_client = storage.Client()
-    assert storage_client.project == "zenml-competition"
-    logger.info(storage_client.get_service_account_email())
     pipeline = train_pipeline(
         importer().configure(output_materializers=CompetitionMaterializer),
         transformer(),
