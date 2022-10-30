@@ -4,10 +4,10 @@ from typing import Any
 from typing import Type
 from typing import Union
 
-import lightgbm as lgb
 import numpy as np
 import pandas as pd
-from sklearn.calibration import CalibratedClassifierCV
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.experimental import enable_hist_gradient_boosting
 from zenml.artifacts import DataArtifact
 from zenml.io import fileio
 from zenml.materializers.base_materializer import BaseMaterializer
@@ -25,7 +25,7 @@ class CompetitionMaterializer(BaseMaterializer):
         np.ndarray,
         pd.Series,
         pd.DataFrame,
-        lgb.LGBMClassifier,
+        HistGradientBoostingClassifier,
         bool,
     ]
 
@@ -34,7 +34,12 @@ class CompetitionMaterializer(BaseMaterializer):
     def handle_input(
         self, data_type: Type[Any]
     ) -> Union[
-        str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier, bool
+        str,
+        np.ndarray,
+        pd.Series,
+        pd.DataFrame,
+        HistGradientBoostingClassifier,
+        bool,
     ]:
         """
         Loads the model from the artifact and returns it.
@@ -50,7 +55,12 @@ class CompetitionMaterializer(BaseMaterializer):
     def handle_return(
         self,
         obj: Union[
-            str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier, bool
+            str,
+            np.ndarray,
+            pd.Series,
+            pd.DataFrame,
+            HistGradientBoostingClassifier,
+            bool,
         ],
     ) -> None:
         """

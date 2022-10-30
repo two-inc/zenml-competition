@@ -9,7 +9,7 @@ from src.util.settings import docker_settings
 
 @pipeline(
     name="train_pipeline_3",
-    enable_cache=False,
+    enable_cache=True,
     settings={"docker": docker_settings},
 )
 def train_pipeline(
