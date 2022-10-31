@@ -17,7 +17,6 @@ from src.pipelines.deployment_pipeline import DeploymentTriggerConfig
 from src.pipelines.deployment_pipeline import dynamic_importer
 from src.pipelines.deployment_pipeline import SeldonDeploymentLoaderStepConfig
 from src.pipelines.inference_pipeline import inference_pipeline
-from src.run_training_pipeline import ge_validator_step
 from src.steps.evaluator import evaluator
 from src.steps.importer import importer
 from src.steps.prediction_service_loader import prediction_service_loader
@@ -132,7 +131,6 @@ def run_deployment_pipeline(
     """Initializes a continuous deployment pipeline run"""
     deployment = continuous_deployment_pipeline(
         importer=importer(),
-        validator=ge_validator_step,
         transformer=transformer(),
         trainer=trainer(),
         evaluator=evaluator(),
