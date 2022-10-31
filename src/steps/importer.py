@@ -12,7 +12,7 @@ logger = get_logger(__name__)
 
 
 @step()
-def importer() -> Output(data=pd.DataFrame, validate_data=bool):
+def importer() -> Output(data=pd.DataFrame):
     """
     Loads the Synthetic data from a
     financial payment system dataset from GCP.
@@ -24,5 +24,4 @@ def importer() -> Output(data=pd.DataFrame, validate_data=bool):
         pd.DataFrame: 'Synthetic data from a financial
                        payment system' dataset
     """
-    validate_data: bool = True
-    return load_data(), validate_data
+    return load_data()

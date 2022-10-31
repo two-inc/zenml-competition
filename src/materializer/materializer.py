@@ -6,8 +6,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import HistGradientBoostingClassifier
-from sklearn.experimental import enable_hist_gradient_boosting
 from zenml.artifacts import DataArtifact
 from zenml.io import fileio
 from zenml.materializers.base_materializer import BaseMaterializer
@@ -25,7 +23,6 @@ class CompetitionMaterializer(BaseMaterializer):
         np.ndarray,
         pd.Series,
         pd.DataFrame,
-        HistGradientBoostingClassifier,
         bool,
     ]
 
@@ -38,7 +35,6 @@ class CompetitionMaterializer(BaseMaterializer):
         np.ndarray,
         pd.Series,
         pd.DataFrame,
-        HistGradientBoostingClassifier,
         bool,
     ]:
         """
@@ -59,7 +55,6 @@ class CompetitionMaterializer(BaseMaterializer):
             np.ndarray,
             pd.Series,
             pd.DataFrame,
-            HistGradientBoostingClassifier,
             bool,
         ],
     ) -> None:
