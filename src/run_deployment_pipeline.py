@@ -58,7 +58,7 @@ def main(
         python src/run_deployment_pipeline.py --deploy --predict --min-f1 0.8
     """
     model_name = "model"
-    deployment_pipeline_name = "continuous_deployment_pipeline"
+    deployment_pipeline_name = "continuous_deployment_pipeline_3"
     deployer_step_name = "seldon_model_deployer_step"
 
     seldon_implementation = "SKLEARN_SERVER"
