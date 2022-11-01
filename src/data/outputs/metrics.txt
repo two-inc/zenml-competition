@@ -1,5 +1,0 @@
-Model Type: lightgbm
-Train Data Length: 475714
-Test Data Length: 118929
-
-{'rocauc': 0.7458055845994053, 'prauc': 0.2062743279582854, 'brier': 0.06533034369497467}

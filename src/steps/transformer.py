@@ -1,15 +1,14 @@
 """Transformer step"""
-from typing import Tuple, List
-import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
 from zenml.steps import Output
 from zenml.steps import step
-from src.util import path
-from zenml.integrations.constants import LIGHTGBM
+
+from src.util import columns
+from src.util.preprocess import get_preprocessed_data
+from src.util.preprocess import train_test_split_by_step
 
 
-@step(enable_cache=False)
+@step(enable_cache=True)
 def transformer(
     data: pd.DataFrame,
 ) -> Output(
@@ -18,44 +17,35 @@ def transformer(
     y_train=pd.Series,
     y_test=pd.Series,
 ):
-    """Divides data into Train and Test sets.
+    """Applies preprocessing, feature engineering & data splitting logic to dataset
+
+    Preprocessing:
+        - Category Encoding
+    Feature Engineering:
+        - Moving Averages, Standard Deviations & Max of Amount Column
+        - Customer/Merchant Transaction Numbers
+    Data Splitting:
+        - Splitting the Data via the Step column
+        - First 80% of Days are used for training, rest for evaluation
 
     Args:
-        data (pd.DataFrame): Raw Input DataFrame for training the Fraud model
+        data (pd.DataFrame): Raw Input DataFrame
 
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test sets
     """
-    return split_data(data)
+    preprocessed_data = get_preprocessed_data(data)
 
-
-def split_data(
-    data: pd.DataFrame,
-) -> Output(
-    X_train=pd.DataFrame,
-    X_test=pd.DataFrame,
-    y_train=pd.Series,
-    y_test=pd.Series,
-):
-    """Splits a DataFrame into Train and Test sets
-
-    Args:
-        data (pd.DataFrame): Data to be split into Train and Test sets
-
-    Returns:
-        Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test sets
-    """
-    dataframe = data.copy()
-
-    X = data.drop("fraud", axis=1)
-    y = data["fraud"]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+    X_train, X_valid, y_train, y_valid = train_test_split_by_step(
+        data=preprocessed_data,
+        step=columns.STEP,
+        target=columns.TARGET,
+        train_size=0.8,
     )
 
-    with open(path.METRICS_PATH, "w") as f:
-        f.write(f"Model Type: {LIGHTGBM}\n")
-        f.write(f"Train Data Length: {len(X_train)}\n")
-        f.write(f"Test Data Length: {len(X_test)}\n\n")
-
-    return X_train, X_test, y_train, y_test
+    return (
+        X_train.loc[:, columns.MODEL],
+        X_valid.loc[:, columns.MODEL],
+        y_train,
+        y_valid,
+    )

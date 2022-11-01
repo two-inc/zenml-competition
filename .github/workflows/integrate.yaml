@@ -71,6 +71,7 @@ jobs:
                   pip install -r requirements.txt
                   export PYTHONPATH="$GITHUB_WORKSPACE"
                   python src/pipelines/train_pipeline.py
+                  touch src/data/outputs/metrics.txt
             - name: Create CML report
               env:
                   REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
