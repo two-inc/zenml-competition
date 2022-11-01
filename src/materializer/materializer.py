@@ -6,6 +6,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from sklearn.pipeline import Pipeline
 from zenml.artifacts import DataArtifact
 from zenml.io import fileio
 from zenml.materializers.base_materializer import BaseMaterializer
@@ -24,19 +25,14 @@ class CompetitionMaterializer(BaseMaterializer):
         pd.Series,
         pd.DataFrame,
         bool,
+        Pipeline,
     ]
 
     ASSOCIATED_ARTIFACT_TYPES = (DataArtifact,)
 
     def handle_input(
         self, data_type: Type[Any]
-    ) -> Union[
-        str,
-        np.ndarray,
-        pd.Series,
-        pd.DataFrame,
-        bool,
-    ]:
+    ) -> Union[str, np.ndarray, pd.Series, pd.DataFrame, bool, Pipeline]:
         """
         Loads the model from the artifact and returns it.
         Args:
@@ -50,13 +46,7 @@ class CompetitionMaterializer(BaseMaterializer):
 
     def handle_return(
         self,
-        obj: Union[
-            str,
-            np.ndarray,
-            pd.Series,
-            pd.DataFrame,
-            bool,
-        ],
+        obj: Union[str, np.ndarray, pd.Series, pd.DataFrame, bool, Pipeline],
     ) -> None:
         """
         Saves the model to the artifact store.

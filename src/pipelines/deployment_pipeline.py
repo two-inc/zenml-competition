@@ -40,7 +40,7 @@ def deployment_trigger(
     input model accuracy and decides if it is good enough to deploy"""
 
     f1_score = metrics.get("F1 Score", config.min_f1_score)
-    return f1_score >= 0  # config.min_f1_score
+    return f1_score > config.min_f1_score
 
 
 class SeldonDeploymentLoaderStepConfig(BaseParameters):
@@ -60,7 +60,7 @@ class SeldonDeploymentLoaderStepConfig(BaseParameters):
 
 @pipeline(
     name="continuous_deployment_pipeline_3",
-    enable_cache=False,
+    enable_cache=True,
     settings={"docker": docker_settings},
 )
 def continuous_deployment_pipeline(
