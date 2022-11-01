@@ -32,7 +32,7 @@ class CompetitionMaterializer(BaseMaterializer):
 
     def handle_input(
         self, data_type: Type[Any]
-    ) -> Union[str, np.ndarray, pd.Series, pd.DataFrame, bool, Pipeline]:
+    ) -> Union[str, np.ndarray, pd.Series, pd.DataFrame, bool]:
         """
         Loads the model from the artifact and returns it.
         Args:
@@ -46,7 +46,7 @@ class CompetitionMaterializer(BaseMaterializer):
 
     def handle_return(
         self,
-        obj: Union[str, np.ndarray, pd.Series, pd.DataFrame, bool, Pipeline],
+        obj: Union[str, np.ndarray, pd.Series, pd.DataFrame, bool],
     ) -> None:
         """
         Saves the model to the artifact store.
