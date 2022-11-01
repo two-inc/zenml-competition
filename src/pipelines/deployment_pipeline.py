@@ -4,8 +4,6 @@ from typing import cast
 
 import numpy as np
 import pandas as pd
-from util.path import TRAIN_DATA_PATH
-from util.settings import docker_settings
 from zenml.integrations.constants import LIGHTGBM
 from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
@@ -18,13 +16,10 @@ from zenml.steps import BaseParameters
 from zenml.steps import Output
 from zenml.steps import step
 
+from src.util.path import TRAIN_DATA_PATH
+from src.util.settings import docker_settings
+
 logger = get_logger(__name__)
-
-
-class DeploymentTriggerConfig(BaseParameters):
-    """Parameters that are used to trigger the deployment"""
-
-    min_accuracy: float
 
 
 @step(enable_cache=False)
@@ -34,15 +29,22 @@ def dynamic_importer() -> Output(data=pd.DataFrame):
     return data
 
 
-@step
+class DeploymentTriggerConfig(BaseParameters):
+    """Parameters that are used to trigger the deployment"""
+
+    min_f1_score: float
+
+
+@step(enable_cache=False)
 def deployment_trigger(
-    accuracy: float,
+    metrics: dict[str, str],
     config: DeploymentTriggerConfig,
 ) -> np.bool:
     """Implements a simple model deployment trigger that looks at the
     input model accuracy and decides if it is good enough to deploy"""
 
-    return accuracy > config.min_accuracy
+    f1_score = metrics.get("F1 Score", config.min_f1_score)
+    return f1_score > config.min_f1_score
 
 
 class SeldonDeploymentLoaderStepConfig(BaseParameters):
@@ -60,23 +62,19 @@ class SeldonDeploymentLoaderStepConfig(BaseParameters):
     model_name: str
 
 
-@pipeline(enable_cache=False, settings={"docker": docker_settings})
+@pipeline(enable_cache=True, settings={"docker": docker_settings})
 def continuous_deployment_pipeline(
-    ingest_data,
-    encode_cat_cols,
-    drop_cols,
-    data_splitter,
-    model_trainer,
+    importer,
+    transformer,
+    trainer,
     evaluator,
     deployment_trigger,
     model_deployer,
 ):
     """Trains a Model and deploys it conditional on the successful execution of the deployment trigger"""
-    customer_churn_df = ingest_data()
-    customer_churn_df = encode_cat_cols(customer_churn_df)
-    customer_churn_df = drop_cols(customer_churn_df)
-    train, test = data_splitter(customer_churn_df)
-    model = model_trainer(train)
-    accuracy = evaluator(model, test)
-    deployment_decision = deployment_trigger(accuracy=accuracy)
+    df = importer()
+    X_train, X_test, y_train, y_test = transformer(df)
+    model = trainer(X_train, y_train)
+    metrics = evaluator(X_test, y_test, model)
+    deployment_decision = deployment_trigger(metrics=metrics)
     model_deployer(deployment_decision, model)
