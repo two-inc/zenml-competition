@@ -6,7 +6,6 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from sklearn.pipeline import Pipeline
 from zenml.artifacts import DataArtifact
 from zenml.io import fileio
 from zenml.materializers.base_materializer import BaseMaterializer
@@ -25,7 +24,6 @@ class CompetitionMaterializer(BaseMaterializer):
         pd.Series,
         pd.DataFrame,
         bool,
-        Pipeline,
     ]
 
     ASSOCIATED_ARTIFACT_TYPES = (DataArtifact,)
