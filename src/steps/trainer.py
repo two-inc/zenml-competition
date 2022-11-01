@@ -2,13 +2,14 @@
 import mlflow
 import pandas as pd
 from sklearn.base import ClassifierMixin
-from sklearn.dummy import DummyClassifier
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder
 from zenml.client import Client
 from zenml.steps import Output
 from zenml.steps import step
 
 from src.util import columns
-from src.util.preprocess import get_column_indices
 from src.util.preprocess import SEED
 
 experiment_tracker = Client().active_stack.experiment_tracker
@@ -26,6 +27,7 @@ def trainer(
     from sklearn.experimental import enable_hist_gradient_boosting
     from sklearn.ensemble import HistGradientBoostingClassifier
     params = {"max_leaf_nodes": None, "max_depth": None, "random_state": SEED}
+
     model = HistGradientBoostingClassifier(**params)
     mlflow.log_param("model_type", model.__class__.__name__)
     mlflow.log_params(params)

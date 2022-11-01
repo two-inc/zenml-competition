@@ -2,6 +2,7 @@
 import mlflow
 import pandas as pd
 from sklearn.base import ClassifierMixin
+from sklearn.pipeline import Pipeline
 from zenml.client import Client
 from zenml.logger import get_logger
 from zenml.steps import step

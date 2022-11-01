@@ -9,7 +9,7 @@ from src.util.preprocess import get_preprocessed_data
 from src.util.preprocess import train_test_split_by_step
 
 
-@step(enable_cache=False)
+@step(enable_cache=True)
 def transformer(
     data: pd.DataFrame,
 ) -> Output(
@@ -44,13 +44,9 @@ def transformer(
         train_size=0.8,
     )
 
-    target_encoder = TargetEncoder(cols=columns.CATEGORICAL)
-    X_train = target_encoder.fit_transform(X_train, y_train)
-    X_valid = target_encoder.transform(X_valid)
-
     return (
-        X_train.loc[:, columns.MODEL],
-        X_valid.loc[:, columns.MODEL],
+        X_train.loc[:, columns.NUMERICAL],
+        X_valid.loc[:, columns.NUMERICAL],
         y_train,
         y_valid,
     )
