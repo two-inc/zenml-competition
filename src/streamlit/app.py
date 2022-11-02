@@ -1,37 +1,61 @@
 """streamlit app"""
 
 import numpy as np
+import pandas as pd
 import streamlit as st
-from zenml.post_execution import get_pipeline
+from zenml.integrations.seldon.model_deployers import SeldonModelDeployer
+from zenml.integrations.seldon.services import SeldonDeploymentService
+from zenml.logger import get_logger
 
-from src.run_training_pipeline import run_training_pipeline
 from src.util.data_access import load_data
 
+logger = get_logger(__name__)
 
-# export PYTHONPATH=/home/jamesworthington/zenml-competition
-# ssh -L 8000:127.0.0.1:8501 jworthington.europe-west2-a.zenml-competition
+
 def main():
     """Main function for streamlit"""
+    data = load_data()
 
-    # df = load_data()
-    # categories = list(df['category'].unique())
-    # categories = [
-    #    "es_transportation",
-    #    "es_health",
-    #    "es_otherservices",
-    #    "es_food",
-    #    "es_hotelservices",
-    #    "es_barsandrestaurants",
-    #    "es_tech",
-    #    "es_sportsandtoys",
-    #    "es_wellnessandbeauty",
-    #    "es_hyper",
-    #    "es_fashion",
-    #    "es_home",
-    #    "es_contents",
-    #    "es_travel",
-    #    "es_leisure",
-    # ]
+    with st.sidebar:
+        step = st.number_input("Step", step=1, min_value=1, max_value=365)
+        amount = st.slider("amount")
+        mean_category_amount_previous_step = st.slider(
+            "mean_category_amount_previous_step"
+        )
+        customer_amount_ma_total = st.slider("customer_amount_ma_total")
+        customer_amount_ma_10 = st.slider("customer_amount_ma_10")
+        customer_amount_ma_5 = st.slider("customer_amount_ma_5")
+        customer_amount_mstd_total = st.slider("customer_amount_mstd_total")
+        customer_amount_mstd_10 = st.slider("customer_amount_mstd_10")
+        customer_amount_mstd_5 = st.slider("customer_amount_mstd_5")
+        merchant_amount_ma_total = st.slider("merchant_amount_ma_total")
+        merchant_amount_ma_50 = st.slider("merchant_amount_ma_50")
+        merchant_amount_ma_10 = st.slider("merchant_amount_ma_10")
+        merchant_amount_ma_5 = st.slider("merchant_amount_ma_5")
+        merchant_amount_ma_3 = st.slider("merchant_amount_ma_3")
+        merchant_amount_mstd_total = st.slider("merchant_amount_mstd_total")
+        merchant_amount_mstd_50 = st.slider("merchant_amount_mstd_50")
+        merchant_amount_mstd_10 = st.slider("merchant_amount_mstd_10")
+        merchant_amount_mstd_5 = st.slider("merchant_amount_mstd_5")
+        merchant_amount_mstd_3 = st.slider("merchant_amount_mstd_3")
+        category_amount_ma_total = st.slider("category_amount_ma_total")
+        category_amount_ma_100 = st.slider("category_amount_ma_100")
+        category_amount_ma_10 = st.slider("category_amount_ma_10")
+        category_amount_mstd_total = st.slider("category_amount_mstd_total")
+        category_amount_mstd_100 = st.slider("category_amount_mstd_100")
+        category_amount_mstd_10 = st.slider("category_amount_mstd_10")
+        merchant_amount_moving_max = st.slider("merchant_amount_moving_max")
+        customer_amount_moving_max = st.slider("customer_amount_moving_max")
+        category_amount_moving_max = st.slider("category_amount_moving_max")
+        customer_fraud_commited_mean = st.slider(
+            "customer_fraud_commited_mean"
+        )
+        merchant_fraud_commited_mean = st.slider(
+            "merchant_fraud_commited_mean"
+        )
+        category_fraud_commited_mean = st.slider(
+            "category_fraud_commited_mean"
+        )
 
     st.title("Detecting Fraudulent Financial Transactions")
 
@@ -46,49 +70,88 @@ def main():
     """
     )
 
-    # amount = st.number_input("Order Amount")
-    # category = st.selectbox("Category", categories)
-    # gender = st.selectbox("Gender", ["M", "F", "E", "U"])
-    # step = st.number_input("Step", 0, 179)
-
     if st.button("Predict"):
-        # service = load_last_service_from_step(
-        #     pipeline_name="continuous_deployment_pipeline",
-        #     step_name="model_deployer",
-        #     running=True,
-        # )
+        model_deployer = SeldonModelDeployer.get_active_model_deployer()
 
-        # put existing pipeline in here that is already instantiated
-        # run_training_pipeline()
-        p = get_pipeline(pipeline_name="train_pipeline")
-        last_run = p.runs[-1]
-        trainer_step = last_run.get_step("trainer")
-        model = trainer_step.output.read()
+        services = model_deployer.find_model_server(
+            pipeline_name="continuous_deployment_pipeline_3",
+            pipeline_step_name="seldon_model_deployer_step",
+            model_name="model",
+        )
+        print(services)
+        if services:
+            service = cast(SeldonDeploymentService, services[0])
+            if service.is_running:
+                print(
+                    f"The Seldon prediction server is running remotely as a Kubernetes "
+                    f"service and accepts inference requests at:\n"
+                    f"    {service.prediction_url}\n"
+                    f"To stop the service, run "
+                    f"[italic green]`zenml model-deployer models delete "
+                    f"{str(service.uuid)}`[/italic green]."
+                )
+            elif service.is_failed:
+                print(
+                    f"The Seldon prediction server is in a failed state:\n"
+                    f" Last state: '{service.status.state.value}'\n"
+                    f" Last error: '{service.status.last_error}'"
+                )
 
-        data = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+        else:
+            print(
+                "No Seldon prediction server is currently running. The deployment "
+                "pipeline must run first to train a model and deploy it. Execute "
+                "the same command with the `--deploy` argument to deploy a model."
+            )
 
-        data = np.array(data).reshape(1, -1)
+        pred = [
+            [
+                step,
+                amount,
+                mean_category_amount_previous_step,
+                customer_amount_ma_total,
+                customer_amount_ma_10,
+                customer_amount_ma_5,
+                customer_amount_mstd_total,
+                customer_amount_mstd_10,
+                customer_amount_mstd_5,
+                merchant_amount_ma_total,
+                merchant_amount_ma_50,
+                merchant_amount_ma_10,
+                merchant_amount_ma_5,
+                merchant_amount_ma_3,
+                merchant_amount_mstd_total,
+                merchant_amount_mstd_50,
+                merchant_amount_mstd_10,
+                merchant_amount_mstd_5,
+                merchant_amount_mstd_3,
+                category_amount_ma_total,
+                category_amount_ma_100,
+                category_amount_ma_10,
+                category_amount_mstd_total,
+                category_amount_mstd_100,
+                category_amount_mstd_10,
+                merchant_amount_moving_max,
+                customer_amount_moving_max,
+                category_amount_moving_max,
+                customer_fraud_commited_mean,
+                merchant_fraud_commited_mean,
+                category_fraud_commited_mean,
+            ]
+        ]
 
-        # data = [
-        #     amount,
-        #     category,
-        #     gender,
-        #     step
-        # ]
-
-        # data.reshape(1,-1)
+        data = pd.Series(pred)
 
         # # prediction = service.predict()
-        prediction = model.predict(data)
-        st.success(
-            f"Given the customer's historical data, model says LEGITIMATE {prediction}"
-        )
-
-        # # prediction = True
-        # # if prediction:
-        # #     st.success("Given the customer's historical data, model says LEGITIMATE")
-        # # else:
-        # #     st.error("Given the customer's historical data, model says FRAUDULENT")
+        try:
+            predict_format = data.to_json(orient="split")
+            prediction = service.predict(predict_format)
+            st.success(
+                f"Given the customer's historical data, model says LEGITIMATE {prediction}"
+            )
+        except Exception as e:
+            logger.error(e)
+            st.error("An unknown error occurred, please try again later")
 
 
 if __name__ == "__main__":
