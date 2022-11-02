@@ -15,10 +15,7 @@ from src.util.preprocess import SEED
 experiment_tracker = Client().active_stack.experiment_tracker
 
 
-@step(
-    enable_cache=False,
-    experiment_tracker=experiment_tracker.name
-)
+@step(enable_cache=False, experiment_tracker=experiment_tracker.name)
 def trainer(
     X_train: pd.DataFrame, y_train: pd.Series
 ) -> Output(model=ClassifierMixin):
@@ -26,6 +23,7 @@ def trainer(
     ## Importing within step to force order of imports, necessary for Import
     from sklearn.experimental import enable_hist_gradient_boosting
     from sklearn.ensemble import HistGradientBoostingClassifier
+
     params = {"max_leaf_nodes": None, "max_depth": None, "random_state": SEED}
 
     model = HistGradientBoostingClassifier(**params)
