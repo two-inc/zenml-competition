@@ -2,13 +2,12 @@ gcsfs==2022.10.0
 google-cloud-aiplatform==1.18.2
 google-cloud-secret-manager==2.12.6
 kfp==1.8.13
-lightgbm==3.3.3
 mlflow==1.25.1
 mlserver==1.1.0
 mlserver-mlflow==1.1.0
 numpy==1.23.4
 pandas==1.5.1
-scikit-learn==1.1.2
+scikit-learn==0.24.2
 seldon-core==1.14.1
 tensorflow==2.8.0
 tensorflow-io==0.27.0

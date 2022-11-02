@@ -1,5 +1,7 @@
 """Importer step"""
+import google.auth
 import pandas as pd
+from google.cloud import storage
 from zenml.logger import get_logger
 from zenml.steps import Output
 from zenml.steps import step
