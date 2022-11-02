@@ -1,5 +1,6 @@
 """Transformer step"""
 import pandas as pd
+from category_encoders.target_encoder import TargetEncoder
 from zenml.steps import Output
 from zenml.steps import step
 
@@ -44,8 +45,8 @@ def transformer(
     )
 
     return (
-        X_train.loc[:, columns.MODEL],
-        X_valid.loc[:, columns.MODEL],
+        X_train.loc[:, columns.NUMERICAL],
+        X_valid.loc[:, columns.NUMERICAL],
         y_train,
         y_valid,
     )

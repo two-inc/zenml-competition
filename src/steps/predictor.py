@@ -4,7 +4,6 @@ from typing import cast
 
 import numpy as np
 import pandas as pd
-from zenml.integrations.constants import LIGHTGBM
 from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
 from zenml.integrations.constants import XGBOOST

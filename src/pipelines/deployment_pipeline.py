@@ -4,10 +4,6 @@ from typing import cast
 
 import numpy as np
 import pandas as pd
-from zenml.integrations.constants import LIGHTGBM
-from zenml.integrations.constants import SELDON
-from zenml.integrations.constants import SKLEARN
-from zenml.integrations.constants import XGBOOST
 from zenml.integrations.seldon.model_deployers import SeldonModelDeployer
 from zenml.integrations.seldon.services import SeldonDeploymentService
 from zenml.logger import get_logger
@@ -62,7 +58,11 @@ class SeldonDeploymentLoaderStepConfig(BaseParameters):
     model_name: str
 
 
-@pipeline(enable_cache=True, settings={"docker": docker_settings})
+@pipeline(
+    name="continuous_deployment_pipeline_3",
+    enable_cache=True,
+    settings={"docker": docker_settings},
+)
 def continuous_deployment_pipeline(
     importer,
     transformer,
