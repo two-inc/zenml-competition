@@ -1,13 +1,18 @@
 """Evaluator step"""
+<<<<<<< HEAD
 import mlflow
 import pandas as pd
 from sklearn.base import ClassifierMixin
 from sklearn.pipeline import Pipeline
+=======
+import lgbm
+import mlflow
+import pandas as pd
+>>>>>>> 0b1cccf (shelmig/chore: Fixing false imports)
 from zenml.client import Client
 from zenml.logger import get_logger
 from zenml.steps import step
 
-from src.materializer.types import Classifier
 from src.util import path
 from src.util.tracking import get_classification_metrics
 
