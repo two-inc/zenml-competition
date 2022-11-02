@@ -1,7 +1,7 @@
 """streamlit app"""
 
-import numpy as np
-import pandas as pd
+from typing import cast
+import json
 import streamlit as st
 from zenml.integrations.seldon.model_deployers import SeldonModelDeployer
 from zenml.integrations.seldon.services import SeldonDeploymentService
@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 
 def main():
     """Main function for streamlit"""
-    data = load_data()
+    _ = load_data()
 
     with st.sidebar:
         step = st.number_input("Step", step=1, min_value=1, max_value=365)
@@ -140,11 +140,8 @@ def main():
             ]
         ]
 
-        data = pd.Series(pred)
-
-        # # prediction = service.predict()
         try:
-            predict_format = data.to_json(orient="split")
+            predict_format = json.dumps(pred)
             prediction = service.predict(predict_format)
             st.success(
                 f"Given the customer's historical data, model says LEGITIMATE {prediction}"
