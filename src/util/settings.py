@@ -8,6 +8,8 @@ from zenml.integrations.constants import SCIPY
 from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
 from zenml.integrations.constants import TENSORFLOW
+from zenml.integrations.constants import EVIDENTLY
+
 
 REQUIRED_INTEGRATIONS = [
     SELDON,
@@ -19,6 +21,7 @@ REQUIRED_INTEGRATIONS = [
     SCIPY,
     GCP,
     TENSORFLOW,
+    EVIDENTLY
 ]
 
 
