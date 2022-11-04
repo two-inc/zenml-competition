@@ -14,4 +14,3 @@ drift_detector = evidently_profile_step(
         verbose_level=1,
     ),
 )
-

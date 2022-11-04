@@ -22,7 +22,7 @@ def train_pipeline(importer, transformer, drift_detector, trainer, evaluator):
         reference_dataset=X_train,
         comparison_dataset=X_test,
     )
-    
+
     model = trainer(X_train, y_train)
     metrics = evaluator(X_test, y_test, model)
 
