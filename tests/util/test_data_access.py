@@ -72,6 +72,7 @@ def test_load_default_data_incorrect_data_type(mock_urlopen, read_csv):
 
 @patch("urllib.request.urlopen")
 def test_get_data_for_test(mock_urlopen):
+    """testing get_data_for_test returns an n=100 sample size"""
     _mock_request(mock_urlopen, "A,B,C\n1,2,3")
 
     data = get_data_for_test()

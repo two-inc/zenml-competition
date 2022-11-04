@@ -1,3 +1,4 @@
+"""Preprocess definition"""
 from typing import Callable
 
 import pandas as pd
@@ -300,6 +301,7 @@ def get_max_group_count(data: pd.Series) -> int:
 def mean_category_amount_previous_step(
     data: pd.DataFrame, category: str, step: str, amount: str
 ) -> pd.Series:
+    """Gets the mean category amount of previous step"""
     data = data.loc[:, [category, step, amount]].copy()
     amount_transacted_daily_by_category = (
         data.groupby([category, step])[amount]
