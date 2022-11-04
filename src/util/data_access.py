@@ -39,7 +39,7 @@ def get_data_for_test() -> pd.DataFrame:
     """Utility function for getting sample data for test"""
     try:
         df = pd.read_csv(path.TRAIN_DATA_PATH)
-        df = get_preprocessed_data()
+        df = get_preprocessed_data(df)
         df = df.sample(n=100)
         return df.loc[:, columns.MODEL]
     except Exception as e:
