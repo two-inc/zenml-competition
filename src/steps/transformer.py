@@ -19,8 +19,6 @@ def transformer(
 ):
     """Applies preprocessing, feature engineering & data splitting logic to dataset
 
-    Preprocessing:
-        - Category Encoding
     Feature Engineering:
         - Moving Averages, Standard Deviations & Max of Amount Column
         - Customer/Merchant Transaction Numbers
