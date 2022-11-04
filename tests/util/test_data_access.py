@@ -5,7 +5,7 @@ import pytest
 
 from src.util.data_access import BUCKET_URL
 from src.util.data_access import DEFAULT_OBJECT_NAME
-from src.util.data_access import load_data, get_data_for_test
+from src.util.data_access import load_data
 
 
 def _mock_request(mock_urlopen, response_data):
@@ -68,22 +68,3 @@ def test_load_default_data_incorrect_data_type(mock_urlopen, read_csv):
 
     with pytest.raises(ValueError, match="Could not load sample data as a DataFrame. Loaded instead as type list"):
         load_data()
-
-
-@patch("urllib.request.urlopen")
-def test_get_data_for_test(mock_urlopen):
-    """testing get_data_for_test returns an n=100 sample size"""
-    _mock_request(mock_urlopen, "A,B,C\n1,2,3")
-
-    data = get_data_for_test()
-    assert len(data) == 100
-
-
-@patch("pandas.read_csv", return_value=None)
-@patch("urllib.request.urlopen")
-def test_get_data_for_test_except_block(mock_urlopen, read_csv):
-    """testing that the try except block"""
-    _mock_request(mock_urlopen, "A,B,C\n1,2,3")
-
-    with pytest.raises(AttributeError, match="NoneType' object has no attribute 'copy'"):
-        data = get_data_for_test()
