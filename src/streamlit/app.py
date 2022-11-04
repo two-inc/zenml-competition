@@ -1,3 +1,5 @@
+"""streamlit app"""
+
 import numpy as np
 import streamlit as st
 from zenml.post_execution import get_pipeline
