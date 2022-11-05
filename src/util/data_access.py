@@ -1,8 +1,6 @@
 """
 Helpers for accessing sample data etc
 """
-from functools import lru_cache
-
 import pandas as pd
 from zenml.logger import get_logger
 
