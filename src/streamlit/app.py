@@ -192,6 +192,7 @@ def get_inputs(
         data (pd.DataFrame): Data
         transaction (Optional[pd.Series]): Transaction to be replicated as the default value of the slider
     """
+
     def get_slider(data: pd.DataFrame, col: str):
         d = data.loc[:, col]
         min = get_min_value(d)
