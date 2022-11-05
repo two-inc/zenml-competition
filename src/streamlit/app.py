@@ -1,27 +1,27 @@
 """streamlit app"""
 import json
-from typing import cast
+import logging
 from typing import Optional
 
 import numpy as np
 import pandas as pd
+import requests
 import streamlit as st
-from zenml.integrations.seldon.model_deployers import SeldonModelDeployer
-from zenml.integrations.seldon.services import SeldonDeploymentService
-from zenml.logger import get_logger
+from dotenv import load_dotenv
 
 from src.util import columns
 from src.util.data_access import load_data
 from src.util.preprocess import get_preprocessed_data
 
-logger = get_logger(__name__)
+load_dotenv()
+
+logger = logging.getLogger(__file__)
 
 
 def main():
     """Defines the Streamlit Application Interface and Control Flow"""
     data = get_data()
     mean_fraud_rate = get_mean_value(data.fraud)
-    service = get_service()
 
     with st.sidebar:
         st.markdown("### :rewind: Recreate a Historical Transaction")
@@ -68,7 +68,7 @@ def main():
         if st.button("Predict"):
             try:
                 predict_format = json.dumps(inputs)
-                prediction = service.predict(predict_format)
+                prediction = get_prediction(predict_format)
                 y_pred_proba = prediction["data"]["ndarray"][-1][-1]
                 if y_pred_proba > mean_fraud_rate:
                     st.error(
@@ -228,43 +228,8 @@ def get_mean_value(data):
 
 
 @st.cache
-def get_service():
-    """Retrieves the Seldon Model server"""
-    model_deployer = SeldonModelDeployer.get_active_model_deployer()
-
-    services = model_deployer.find_model_server(
-        pipeline_name="continuous_deployment_pipeline_3",
-        pipeline_step_name="seldon_model_deployer_step",
-        model_name="model",
-    )
-    if services:
-        service = cast(SeldonDeploymentService, services[0])
-        if service.is_running:
-            print(
-                f"The Seldon prediction server is running remotely as a Kubernetes "
-                f"service and accepts inference requests at:\n"
-                f"    {service.prediction_url}\n"
-                f"To stop the service, run "
-                f"[italic green]`zenml model-deployer models delete "
-                f"{str(service.uuid)}`[/italic green]."
-            )
-        elif service.is_failed:
-            print(
-                f"The Seldon prediction server is in a failed state:\n"
-                f" Last state: '{service.status.state.value}'\n"
-                f" Last error: '{service.status.last_error}'"
-            )
-            raise ValueError
-
-    else:
-        print(
-            "No Seldon prediction server is currently running. The deployment "
-            "pipeline must run first to train a model and deploy it. Execute "
-            "the same command with the `--deploy` argument to deploy a model."
-        )
-        return None
-
-    return service
+def get_prediction(data: str) -> dict:
+    pass
 
 
 if __name__ == "__main__":
