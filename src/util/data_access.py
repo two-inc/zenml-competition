@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from src.util import columns
 from src.util.preprocess import split_data_by_quantile
-from src.util.settings import BASELINE_DATA_PROPORTION
+
 
 load_dotenv()
 
@@ -40,6 +40,9 @@ def load_data(object_name: str = None) -> pd.DataFrame:
         )
 
     return result
+
+
+BASELINE_DATA_PROPORTION = 0.6
 
 
 def load_baseline_data() -> pd.DataFrame:

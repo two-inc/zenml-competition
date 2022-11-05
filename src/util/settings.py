@@ -10,7 +10,6 @@ from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
 from zenml.integrations.constants import TENSORFLOW
 
-BASELINE_DATA_PROPORTION = 0.6
 
 REQUIRED_INTEGRATIONS = [
     SELDON,
