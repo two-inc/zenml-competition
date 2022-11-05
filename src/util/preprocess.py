@@ -1,5 +1,6 @@
 """Preprocess definition"""
 from typing import Callable
+from typing import Optional
 
 import pandas as pd
 from sklearn.ensemble._forest import ForestClassifier
@@ -12,7 +13,10 @@ SEED = 42
 
 
 def train_test_split_by_step(
-    data: pd.DataFrame, step: str, target: str, train_size: int = 0.8
+    data: pd.DataFrame,
+    step: str,
+    target: Optional[str] = None,
+    train_size: int = 0.8,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """Splits a DataFrame by a discrete step column into train and test sets
 
@@ -36,14 +40,19 @@ def train_test_split_by_step(
         raise ValueError(
             f"train_size argument must be between 0 and 1. train_size: {train_size}"
         )
-    train_step_cutoff = data.loc[:, step].quantile(train_size)
-    train_idx = data[data.loc[:, step] <= train_step_cutoff].index
-    valid_idx = data[data.loc[:, step] > train_step_cutoff].index
-    df_train = data.iloc[train_idx, :]
-    df_test = data.iloc[valid_idx, :]
+    df_train, df_test = split_data_by_quantile(data, step, quantile=train_size)
     X_train, y_train = df_train.drop(target, axis=1), df_train.loc[:, target]
     X_test, y_test = df_test.drop(target, axis=1), df_test.loc[:, target]
     return (X_train, X_test, y_train, y_test)
+
+
+def split_data_by_quantile(
+    data: pd.DataFrame, split_column: str, quantile: int
+) -> tuple[pd.DataFrame]:
+    train_step_cutoff = data.loc[:, split_column].quantile(quantile)
+    train_idx = data[data.loc[:, split_column] <= train_step_cutoff].index
+    valid_idx = data[data.loc[:, split_column] > train_step_cutoff].index
+    return (data.iloc[train_idx, :], data.iloc[valid_idx, :])
 
 
 def get_preprocessed_data(data: pd.DataFrame) -> pd.DataFrame:

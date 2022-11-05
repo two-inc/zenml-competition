@@ -5,10 +5,9 @@ from zenml.logger import get_logger
 from src.materializer.materializer import CompetitionMaterializer
 from src.pipelines.train_pipeline import train_pipeline
 from src.steps.evaluator import evaluator
-from src.steps.importer import importer
+from src.steps.importer import baseline_data_importer
 from src.steps.trainer import trainer
 from src.steps.transformer import transformer
-from src.steps.drift_detector import drift_detector
 
 logger = get_logger(__name__)
 
@@ -16,9 +15,10 @@ logger = get_logger(__name__)
 def run_training_pipeline() -> None:
     """Executes the ZenML train_pipeline"""
     pipeline = train_pipeline(
-        importer().configure(output_materializers=CompetitionMaterializer),
+        baseline_data_importer().configure(
+            output_materializers=CompetitionMaterializer
+        ),
         transformer(),
-        drift_detector,
         trainer(),
         evaluator(),
     )

@@ -1,3 +1,4 @@
+evidently==0.1.52.dev0
 gcsfs==2022.10.0
 google-cloud-aiplatform==1.18.2
 google-cloud-secret-manager==2.12.6
@@ -11,4 +12,4 @@ scikit-learn==0.24.2
 seldon-core==1.14.1
 tensorflow==2.8.1
 tensorflow-io==0.27.0
-zenml==0.20.5
+zenml==0.21.1
