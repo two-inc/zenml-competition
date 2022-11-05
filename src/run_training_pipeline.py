@@ -2,7 +2,6 @@
 from google.cloud import storage
 from zenml.logger import get_logger
 
-from src.materializer.materializer import CompetitionMaterializer
 from src.pipelines.train_pipeline import train_pipeline
 from src.steps.evaluator import evaluator
 from src.steps.importer import baseline_data_importer
@@ -15,9 +14,7 @@ logger = get_logger(__name__)
 def run_training_pipeline() -> None:
     """Executes the ZenML train_pipeline"""
     pipeline = train_pipeline(
-        baseline_data_importer().configure(
-            output_materializers=CompetitionMaterializer
-        ),
+        baseline_data_importer(),
         transformer(),
         trainer(),
         evaluator(),
