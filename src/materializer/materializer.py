@@ -1,3 +1,4 @@
+"""Definition of the materializer"""
 import os
 import pickle
 from typing import Any
