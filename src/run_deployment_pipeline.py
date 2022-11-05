@@ -14,12 +14,9 @@ from zenml.steps import BaseStep
 from src.pipelines.deployment_pipeline import continuous_deployment_pipeline
 from src.pipelines.deployment_pipeline import deployment_trigger
 from src.pipelines.deployment_pipeline import DeploymentTriggerConfig
-from src.pipelines.inference_pipeline import dynamic_importer
-from src.pipelines.inference_pipeline import inference_pipeline
 from src.steps.evaluator import evaluator
 from src.steps.importer import baseline_data_importer
 from src.steps.importer import new_data_importer
-from src.steps.predictor import predictor
 from src.steps.trainer import trainer
 from src.steps.transformer import baseline_and_new_data_combiner
 from src.steps.transformer import transformer
@@ -55,9 +52,19 @@ def main(
     min_roc_auc: float,
     min_pr_auc: float,
 ):
-    """Run the Seldon example continuous deployment or inference pipeline
+    """Entrypoint to Continuous Deployment (CD) Pipeline execution.
+
+    Retrieves the active model deployer and instantiates the configuration
+    required to run the CD pipeline
+
     Example usage:
         python src/run_deployment_pipeline.py --deploy --predict --min-f1 0.8
+
+    Args:
+        min_f1 (float): Minimum F1 Score Allowed for Model Deployment
+        max_brier (float): Maximum Brier Score Allowed for Model Deployment
+        min_roc_auc (float): Minimum ROC AUC Score Allowed for Model Deployment
+        min_pr_auc (float): Minimum PR AUC Score Allowed for Model Deployment
     """
     model_name = "model"
     deployment_pipeline_name = "continuous_deployment_pipeline_4"
@@ -93,36 +100,47 @@ def main(
         pipeline_step_name=deployer_step_name,
         model_name=model_name,
     )
-    if services:
-        service = cast(SeldonDeploymentService, services[0])
-        if service.is_running:
-            print(
-                f"The Seldon prediction server is running remotely as a Kubernetes "
-                f"service and accepts inference requests at:\n"
-                f"    {service.prediction_url}\n"
-                f"To stop the service, run "
-                f"[italic green]`zenml model-deployer models delete "
-                f"{str(service.uuid)}`[/italic green]."
-            )
-        elif service.is_failed:
-            print(
-                f"The Seldon prediction server is in a failed state:\n"
-                f" Last state: '{service.status.state.value}'\n"
-                f" Last error: '{service.status.last_error}'"
-            )
-
-    else:
+    if not services:
         print(
-            "No Seldon prediction server is currently running. The deployment "
-            "pipeline must run first to train a model and deploy it. Execute "
-            "the same command with the `--deploy` argument to deploy a model."
+            "No Seldon prediction server is currently running."
+            "This implies there was an issue with deploying your"
+            "model to Seldon."
+        )
+        return
+
+    service = cast(SeldonDeploymentService, services[0])
+    if service.is_running:
+        print(
+            f"The Seldon prediction server is running remotely as a Kubernetes "
+            f"service and accepts inference requests at:\n"
+            f"    {service.prediction_url}\n"
+            f"To stop the service, run "
+            f"[italic green]`zenml model-deployer models delete "
+            f"{str(service.uuid)}`[/italic green]."
+        )
+    elif service.is_failed:
+        print(
+            f"The Seldon prediction server is in a failed state:\n"
+            f" Last state: '{service.status.state.value}'\n"
+            f" Last error: '{service.status.last_error}'"
         )
 
 
 def run_deployment_pipeline(
     deployment_trigger: BaseStep, model_deployer: BaseStep
 ) -> None:
-    """Initializes a continuous deployment pipeline run"""
+    """Executes a Continuous Deployment (CD) Pipeline
+
+    In addition to training a model as in the training pipeline,
+    the CD pipeline also:
+    - Compares baseline and new data, checking for data and target drift
+    - Evaluates the performance of the trained model on the holdout set
+    - Deploys the model to the model deployer if Deployment Trigger succeeds
+
+    Args:
+        deployment_trigger (BaseStep): Step deciding whether to deploy the model
+        model_deployer (BaseStep): Step responsible for deploying the model
+    """
     deployment = continuous_deployment_pipeline(
         baseline_data_importer=baseline_data_importer(),
         new_data_importer=new_data_importer(),
@@ -136,16 +154,6 @@ def run_deployment_pipeline(
     )
 
     deployment.run()
-
-
-def predict(prediction_service_loader: BaseStep) -> None:
-    """Initialize an inference pipeline run"""
-    inference = inference_pipeline(
-        dynamic_importer=dynamic_importer(),
-        prediction_service_loader=prediction_service_loader,
-        predictor=predictor(),
-    )
-    inference.run()
 
 
 if __name__ == "__main__":

@@ -2,33 +2,32 @@
 import mlflow
 import pandas as pd
 from sklearn.base import ClassifierMixin
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder
-from zenml.client import Client
 from zenml.steps import Output
 from zenml.steps import step
 
-from src.util import columns
-from src.util.preprocess import SEED
+from src.util.tracking import experiment_tracker_name
+from src.util.tracking import HGBM_PARAMS
 
-experiment_tracker = Client().active_stack.experiment_tracker
+from sklearn.experimental import enable_hist_gradient_boosting  # noreorder
+from sklearn.ensemble import HistGradientBoostingClassifier
 
 
-@step(enable_cache=False, experiment_tracker=experiment_tracker.name)
+@step(enable_cache=False, experiment_tracker=experiment_tracker_name)
 def trainer(
     X_train: pd.DataFrame, y_train: pd.Series
 ) -> Output(model=ClassifierMixin):
-    """Trains a GBM Model"""
-    ## Importing within step to force order of imports, necessary for Import
-    from sklearn.experimental import enable_hist_gradient_boosting
-    from sklearn.ensemble import HistGradientBoostingClassifier
+    """Trains a HistGradientBoostingClassifier
 
-    params = {"max_leaf_nodes": None, "max_depth": None, "random_state": SEED}
+    Args:
+        X_train (pd.DataFrame): Training Data Features
+        y_train (pd.Series): Training Data Target
 
-    model = HistGradientBoostingClassifier(**params)
-    mlflow.log_param("model_type", model.__class__.__name__)
-    mlflow.log_params(params)
+    Returns:
+        ClassifierMixin: Trained Classifier
+    """
+    model = HistGradientBoostingClassifier(**HGBM_PARAMS)
+    mlflow.log_params("model_type", model.__class__.__name__)
+    mlflow.log_params(HGBM_PARAMS)
 
     model.fit(X_train, y_train)
 

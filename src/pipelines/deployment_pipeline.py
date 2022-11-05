@@ -2,8 +2,6 @@
 import numpy as np
 import pandas as pd
 from evidently.model_profile import Profile
-from zenml.integrations.seldon.model_deployers import SeldonModelDeployer
-from zenml.integrations.seldon.services import SeldonDeploymentService
 from zenml.logger import get_logger
 from zenml.pipelines import pipeline
 from zenml.steps import BaseParameters
@@ -17,7 +15,7 @@ logger = get_logger(__name__)
 
 
 class DeploymentTriggerConfig(BaseParameters):
-    """Parameters that are used to trigger the deployment"""
+    """Thresholds determining whether to trigger the deployment"""
 
     min_f1: float
     max_brier: float
@@ -30,7 +28,7 @@ def deployment_trigger(
     metrics: dict[str, str],
     report: Profile,
     config: DeploymentTriggerConfig,
-) -> np.bool:
+) -> Output(deployment_trigger=np.bool):
     """Evaluates metric results and data drift reports to determine whether to deploy
 
     Args:
@@ -69,21 +67,6 @@ def deployment_trigger(
     return deployment_decision
 
 
-class SeldonDeploymentLoaderStepConfig(BaseParameters):
-    """Seldon deployment loader configuration
-    Attributes:
-        pipeline_name: name of the pipeline that deployed the Seldon prediction
-            server
-        step_name: the name of the step that deployed the Seldon prediction
-            server
-        model_name: the name of the model that was deployed
-    """
-
-    pipeline_name: str
-    step_name: str
-    model_name: str
-
-
 @pipeline(
     name="continuous_deployment_pipeline_4",
     enable_cache=True,
@@ -100,7 +83,18 @@ def continuous_deployment_pipeline(
     deployment_trigger,
     model_deployer,
 ):
-    """Trains a Model and deploys it conditional on the successful execution of the deployment trigger"""
+    """Trains and deploys a model provided that conditions established by the deployment trigger are met
+
+    Process:
+        - Load the 'baseline' data, which is assumed to be the state of truth for the previous model
+        - Load the 'new' data, which represents the most up-to-date data available for training.
+        - Check for Data Drift with Evidently
+        - Combine the new and baseline datasets
+        - Preprocess the data and train a new model on the total data
+        - Compute performance metrics on the holdout set for the model predictions
+        - Evaluate the performance metric results and the results of the drift detection component
+        - Deploy the model if the deployment trigger step is successful
+    """
     df_baseline = baseline_data_importer()
     df_new = new_data_importer()
     drift_report, _ = drift_detector(

@@ -48,6 +48,19 @@ def train_test_split_by_step(
 def split_data_by_quantile(
     data: pd.DataFrame, split_column: str, quantile: int
 ) -> tuple[pd.DataFrame]:
+    """Splits a given dataset on some column by a quantile value
+
+    Used to split the financial datasets by the 'step' column, which denotes the simulated
+    day on which the transaction occurred
+
+    Args:
+        data (pd.DataFrame): Data to be split
+        split_column (str): Column to split the data on
+        quantile (int): Quantile value to split the data by
+
+    Returns:
+        tuple[pd.DataFrame]: Pre-quantile Dataset, Post-quantile dataset
+    """
     train_step_cutoff = data.loc[:, split_column].quantile(quantile)
     train_idx = data[data.loc[:, split_column] <= train_step_cutoff].index
     valid_idx = data[data.loc[:, split_column] > train_step_cutoff].index

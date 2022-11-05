@@ -7,20 +7,22 @@ from zenml.logger import get_logger
 from zenml.steps import step
 
 from src.util import path
+from src.util.tracking import experiment_tracker_name
 from src.util.tracking import get_classification_metrics
 
 logger = get_logger(__name__)
 
-experiment_tracker = Client().active_stack.experiment_tracker
 
-
-@step(enable_cache=False, experiment_tracker=experiment_tracker.name)
+@step(enable_cache=False, experiment_tracker=experiment_tracker_name)
 def evaluator(
     X_test: pd.DataFrame,
     y_test: pd.DataFrame,
     model: ClassifierMixin,
 ) -> dict[str, float]:
     """Evaluate a Classification Model
+
+    Evalautes a classifier according to some classification metrics on a holdout set
+    and records those metric results in the experiment tracker
 
     Args:
         X_test: DataFrame with eval feature data.

@@ -1,7 +1,5 @@
 """Importer step"""
-import google.auth
 import pandas as pd
-from google.cloud import storage
 from zenml.logger import get_logger
 from zenml.steps import Output
 from zenml.steps import step
@@ -15,15 +13,15 @@ logger = get_logger(__name__)
 @step()
 def baseline_data_importer() -> Output(data=pd.DataFrame):
     """
-    Loads the Synthetic data from a
+    Loads "baseline" slice of the Synthetic data from a
     financial payment system dataset from GCP.
 
     Dataset Link:
         - https://www.kaggle.com/datasets/ealaxi/banksim1
 
     Returns:
-        pd.DataFrame: 'Synthetic data from a financial
-                       payment system' dataset
+        pd.DataFrame: Baseline data from the 'Synthetic data from
+                      a financial payment system' dataset
     """
     return load_baseline_data()
 
@@ -31,14 +29,14 @@ def baseline_data_importer() -> Output(data=pd.DataFrame):
 @step()
 def new_data_importer() -> Output(data=pd.DataFrame):
     """
-    Loads the Synthetic data from a
+    Loads the "new" slice from the Synthetic data from a
     financial payment system dataset from GCP.
 
     Dataset Link:
         - https://www.kaggle.com/datasets/ealaxi/banksim1
 
     Returns:
-        pd.DataFrame: 'Synthetic data from a financial
-                       payment system' dataset
+        pd.DataFrame: New data from the 'Synthetic data from a financial
+                      payment system' dataset
     """
     return load_new_data()

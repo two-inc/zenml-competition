@@ -1,7 +1,6 @@
 """
 Training pipeline
 """
-import pandas as pd
 from zenml.pipelines import pipeline
 
 from src.util.settings import docker_settings
@@ -13,11 +12,13 @@ from src.util.settings import docker_settings
     settings={"docker": docker_settings},
 )
 def train_pipeline(importer, transformer, trainer, evaluator):
-    """Fraud model Training Pipeline
-    Args:
+    """Trains a fraud detection model
 
-    Returns:
-        metrics: dict[str,float]
+    Process:
+        - Import some data
+        - Transform and split it into training and holdout set
+        - Train the model
+        - Evaluate the performance of the model on the holdout set
     """
     df = importer()
     X_train, X_test, y_train, y_test = transformer(df)

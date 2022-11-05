@@ -1,5 +1,6 @@
 """util settings file """
 from zenml.config import DockerSettings
+from zenml.integrations.constants import EVIDENTLY
 from zenml.integrations.constants import GCP
 from zenml.integrations.constants import KUBEFLOW
 from zenml.integrations.constants import KUBERNETES
@@ -8,8 +9,8 @@ from zenml.integrations.constants import SCIPY
 from zenml.integrations.constants import SELDON
 from zenml.integrations.constants import SKLEARN
 from zenml.integrations.constants import TENSORFLOW
-from zenml.integrations.constants import EVIDENTLY
 
+BASELINE_DATA_PROPORTION = 0.6
 
 REQUIRED_INTEGRATIONS = [
     SELDON,

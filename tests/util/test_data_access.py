@@ -1,10 +1,10 @@
-"""testing data access functions """
+"""Testing data access functions"""
+import os
 from unittest.mock import Mock
 from unittest.mock import patch
+
 import pytest
 
-from src.util.data_access import BUCKET_URL
-from src.util.data_access import DEFAULT_OBJECT_NAME
 from src.util.data_access import load_data
 
 
@@ -26,10 +26,9 @@ def test_load_default_data(mock_urlopen):
     data = load_data()
 
     assert mock_urlopen.call_count == 1
-    assert (
-        mock_urlopen.call_args[0][0].full_url
-        == BUCKET_URL + DEFAULT_OBJECT_NAME
-    )
+    assert mock_urlopen.call_args[0][0].full_url == os.environ.get(
+        "BUCKET_URL"
+    ) + os.environ.get("DEFAULT_OBJECT_NAME")
     assert not data.empty
 
 
@@ -43,7 +42,7 @@ def test_load_custom_data(mock_urlopen):
     assert mock_urlopen.call_count == 1
     assert (
         mock_urlopen.call_args[0][0].full_url
-        == BUCKET_URL + "my_custom_object"
+        == os.environ.get("BUCKET_URL") + "my_custom_object"
     )
     assert not data.empty
 
@@ -59,12 +58,15 @@ def test_load_default_data_no_data_found(mock_urlopen, read_csv):
         load_data()
 
 
-@patch("pandas.read_csv", return_value=[1,2,3])
+@patch("pandas.read_csv", return_value=[1, 2, 3])
 @patch("urllib.request.urlopen")
 def test_load_default_data_incorrect_data_type(mock_urlopen, read_csv):
     """test_load_default_data"""
 
     _mock_request(mock_urlopen, "A,B,C\n1,2,3")
 
-    with pytest.raises(ValueError, match="Could not load sample data as a DataFrame. Loaded instead as type list"):
+    with pytest.raises(
+        ValueError,
+        match="Could not load sample data as a DataFrame. Loaded instead as type list",
+    ):
         load_data()

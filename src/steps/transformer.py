@@ -53,4 +53,15 @@ def transformer(
 def baseline_and_new_data_combiner(
     baseline_data: pd.DataFrame, new_data: pd.DataFrame
 ) -> Output(data=pd.DataFrame):
+    """Combines Baseline and New Data into a unified dataset
+
+    Used by the CD pipeline to combine the datasets that are first checked for data drift
+
+    Args:
+        baseline_data (pd.DataFrame): Baseline Data obtained from a mock API.
+        new_data (pd.DataFrame): New Data obtained from a mock API
+
+    Returns:
+        pd.DataFrame: Unified Dataset
+    """
     return pd.concat([baseline_data, new_data], axis=0)

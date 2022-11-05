@@ -1,8 +1,7 @@
-from evidently.model_profile import Profile
+"""Evidently Data Validation Step"""
 from zenml.integrations.evidently.steps import evidently_profile_step
 from zenml.integrations.evidently.steps import EvidentlyColumnMapping
 from zenml.integrations.evidently.steps import EvidentlyProfileParameters
-from zenml.steps import step
 
 from src.util import columns
 
