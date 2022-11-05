@@ -1,5 +1,7 @@
+"""testing data access functions """
 from unittest.mock import Mock
 from unittest.mock import patch
+import pytest
 
 from src.util.data_access import BUCKET_URL
 from src.util.data_access import DEFAULT_OBJECT_NAME
@@ -44,3 +46,25 @@ def test_load_custom_data(mock_urlopen):
         == BUCKET_URL + "my_custom_object"
     )
     assert not data.empty
+
+
+@patch("pandas.read_csv", return_value=None)
+@patch("urllib.request.urlopen")
+def test_load_default_data_no_data_found(mock_urlopen, read_csv):
+    """test_load_default_data"""
+
+    _mock_request(mock_urlopen, "A,B,C\n1,2,3")
+
+    with pytest.raises(ValueError, match="Sample data not found"):
+        load_data()
+
+
+@patch("pandas.read_csv", return_value=[1,2,3])
+@patch("urllib.request.urlopen")
+def test_load_default_data_incorrect_data_type(mock_urlopen, read_csv):
+    """test_load_default_data"""
+
+    _mock_request(mock_urlopen, "A,B,C\n1,2,3")
+
+    with pytest.raises(ValueError, match="Could not load sample data as a DataFrame. Loaded instead as type list"):
+        load_data()
