@@ -27,12 +27,11 @@ repos:
       rev: 5.0.4
       hooks:
           - id: flake8
-    - repo: https://github.com/PyCQA/bandit
-      rev: 1.7.4
-      hooks:
-          - id: bandit
-            exclude: tests^
     - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
       rev: 0.2.2
       hooks:
           - id: yamlfmt
+    - repo: https://github.com/hadialqattan/pycln
+      rev: v1.3.5
+      hooks:
+          - id: pycln

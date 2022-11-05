@@ -1,6 +1,5 @@
 """Transformer step"""
 import pandas as pd
-from category_encoders.target_encoder import TargetEncoder
 from zenml.steps import Output
 from zenml.steps import step
 
@@ -13,10 +12,10 @@ from src.util.preprocess import train_test_split_by_step
 def transformer(
     data: pd.DataFrame,
 ) -> Output(
-    x_train=pd.DataFrame,
-    x_test=pd.DataFrame,
+    X_train=pd.DataFrame,
+    X_valid=pd.DataFrame,
     y_train=pd.Series,
-    y_test=pd.Series,
+    y_valid=pd.Series,
 ):
     """Applies preprocessing, feature engineering & data splitting logic to dataset
 
@@ -35,10 +34,10 @@ def transformer(
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]: Train and Test sets
     """
-    preprocessed_data = get_preprocessed_data(data)
+    preprocesed_data = get_preprocessed_data(data)
 
     X_train, X_valid, y_train, y_valid = train_test_split_by_step(
-        data=preprocessed_data,
+        data=preprocesed_data,
         step=columns.STEP,
         target=columns.TARGET,
         train_size=0.8,
@@ -50,3 +49,10 @@ def transformer(
         y_train,
         y_valid,
     )
+
+
+@step
+def baseline_and_new_data_combiner(
+    baseline_data: pd.DataFrame, new_data: pd.DataFrame
+) -> Output(data=pd.DataFrame):
+    return pd.concat([baseline_data, new_data], axis=0)

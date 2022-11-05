@@ -14,51 +14,53 @@ from zenml.steps import BaseStep
 from src.pipelines.deployment_pipeline import continuous_deployment_pipeline
 from src.pipelines.deployment_pipeline import deployment_trigger
 from src.pipelines.deployment_pipeline import DeploymentTriggerConfig
-from src.pipelines.deployment_pipeline import dynamic_importer
-from src.pipelines.deployment_pipeline import SeldonDeploymentLoaderStepConfig
+from src.pipelines.inference_pipeline import dynamic_importer
 from src.pipelines.inference_pipeline import inference_pipeline
 from src.steps.evaluator import evaluator
-from src.steps.importer import importer
-from src.steps.prediction_service_loader import prediction_service_loader
+from src.steps.importer import baseline_data_importer
+from src.steps.importer import new_data_importer
 from src.steps.predictor import predictor
 from src.steps.trainer import trainer
+from src.steps.transformer import baseline_and_new_data_combiner
 from src.steps.transformer import transformer
+from src.steps.validation import drift_detector
 
 logger = get_logger(__name__)
 
 
 @click.command()
 @click.option(
-    "--deploy",
-    "-d",
-    is_flag=True,
-    default=False,
-    help="Run the deployment pipeline to train and deploy a model",
-)
-@click.option(
-    "--predict",
-    "-p",
-    is_flag=True,
-    default=False,
-    help="Run the inference pipeline to send a prediction request "
-    "to the deployed model",
-)
-@click.option(
     "--min-f1",
     default=0.8,
     help="Minimum F1 Score required to deploy the model (default: 0.8)",
 )
+@click.option(
+    "--min-roc-auc",
+    default=0.8,
+    help="Minimum ROC AUC required to deploy the model (default: 0.8)",
+)
+@click.option(
+    "--min-pr-auc",
+    default=0.8,
+    help="Minimum F1 Score required to deploy the model (default: 0.8)",
+)
+@click.option(
+    "--max-brier",
+    default=0.05,
+    help="Maximum Brier Score required to deploy the model (default: 0.8)",
+)
 def main(
-    deploy: bool,
-    predict: bool,
     min_f1: float,
+    max_brier: float,
+    min_roc_auc: float,
+    min_pr_auc: float,
 ):
     """Run the Seldon example continuous deployment or inference pipeline
     Example usage:
         python src/run_deployment_pipeline.py --deploy --predict --min-f1 0.8
     """
     model_name = "model"
-    deployment_pipeline_name = "continuous_deployment_pipeline_3"
+    deployment_pipeline_name = "continuous_deployment_pipeline_4"
     deployer_step_name = "seldon_model_deployer_step"
 
     seldon_implementation = "SKLEARN_SERVER"
@@ -66,33 +68,25 @@ def main(
     model_deployer = SeldonModelDeployer.get_active_model_deployer()
     logger.info(f"Active Model Deployer is: {model_deployer}")
 
-    if deploy:
-        deployment_trigger_ = deployment_trigger(
-            config=DeploymentTriggerConfig(
-                min_f1_score=min_f1,
-            )
+    deployment_trigger_ = deployment_trigger(
+        config=DeploymentTriggerConfig(
+            min_f1=min_f1,
+            max_brier=max_brier,
+            min_roc_auc=min_roc_auc,
+            min_pr_auc=min_pr_auc,
         )
-        model_deployer_step = seldon_model_deployer_step(
-            params=SeldonDeployerStepParameters(
-                service_config=SeldonDeploymentConfig(
-                    model_name=model_name,
-                    replicas=1,
-                    implementation=seldon_implementation,
-                ),
-                timeout=120,
-            )
-        )
-        run_deployment_pipeline(deployment_trigger_, model_deployer_step)
-
-    if predict:
-        prediction_service_loader_ = prediction_service_loader(
-            SeldonDeploymentLoaderStepConfig(
-                pipeline_name=deployment_pipeline_name,
-                step_name=deployer_step_name,
+    )
+    model_deployer_step = seldon_model_deployer_step(
+        params=SeldonDeployerStepParameters(
+            service_config=SeldonDeploymentConfig(
                 model_name=model_name,
-            )
+                replicas=1,
+                implementation=seldon_implementation,
+            ),
+            timeout=120,
         )
-        predict(prediction_service_loader_)
+    )
+    run_deployment_pipeline(deployment_trigger_, model_deployer_step)
 
     services = model_deployer.find_model_server(
         pipeline_name=deployment_pipeline_name,
@@ -130,10 +124,13 @@ def run_deployment_pipeline(
 ) -> None:
     """Initializes a continuous deployment pipeline run"""
     deployment = continuous_deployment_pipeline(
-        importer=importer(),
+        baseline_data_importer=baseline_data_importer(),
+        new_data_importer=new_data_importer(),
+        data_combiner=baseline_and_new_data_combiner(),
         transformer=transformer(),
         trainer=trainer(),
         evaluator=evaluator(),
+        drift_detector=drift_detector,
         deployment_trigger=deployment_trigger,
         model_deployer=model_deployer,
     )

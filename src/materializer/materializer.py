@@ -11,8 +11,6 @@ from zenml.artifacts import DataArtifact
 from zenml.io import fileio
 from zenml.materializers.base_materializer import BaseMaterializer
 
-from src.materializer import types
-
 DEFAULT_FILENAME = "SyntheticFinancialData"
 
 
