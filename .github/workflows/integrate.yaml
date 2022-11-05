@@ -48,35 +48,3 @@ jobs:
               with:
                   src: ./src
                   jupyter: true
-
-
-    cml:
-        runs-on: self-hosted
-        container:
-            image: python:3.9
-        steps:
-            - name: Setting up Node for CML
-              uses: actions/setup-node@v2
-              with:
-                  node-version: '16'
-            - name: Setting up CML Action
-              uses: iterative/setup-cml@v1
-            - name: Cloning Repository
-              uses: actions/checkout@v2
-              with:
-                  ref: ${{ github.event.pull_request.head.sha }}
-            - name: Train model
-              run: |
-                  # Your ML workflow goes here
-                  pip install -r requirements.txt
-                  export PYTHONPATH="$GITHUB_WORKSPACE"
-                  python src/run_train_pipeline.py
-            - name: Create CML report
-              env:
-                  REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  # Post reports as comments in GitHub PRs
-                  touch src/data/outputs/metrics.txt
-                  cat src/data/outputs/metrics.txt >> report.md
-                  cml comment create --pr report.md
-              if: github.event_name == 'pull_request'
