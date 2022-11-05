@@ -1,0 +1,7 @@
+-r docker-requirements.txt
+jupyterlab==3.5.0
+python-dotenv==0.21.0
+scikit-optimize==0.9
+seaborn==0.12.1
+shap==0.39.0
+tqdm==4.64.1

@@ -3,7 +3,6 @@ from typing import Callable
 from typing import Optional
 
 import pandas as pd
-from sklearn.ensemble._forest import ForestClassifier
 
 from src.util import columns
 
@@ -332,9 +331,7 @@ def get_column_indices(data: pd.DataFrame, cols: list[str]) -> list[int]:
     return [data.columns.get_loc(i) for i in cols]
 
 
-def get_feature_importances(
-    model: ForestClassifier, X_train: pd.DataFrame
-) -> dict[str, float]:
+def get_feature_importances(model, X_train: pd.DataFrame) -> dict[str, float]:
     """Retrieves the feature importances from a tree-based model by feature"""
     return {
         col: f for col, f in zip(X_train.columns, model.feature_importances_)
