@@ -1,6 +1,6 @@
 """streamlit app"""
-import json
 import logging
+import os
 from typing import Optional
 
 import numpy as np
@@ -67,16 +67,14 @@ def main():
 
         if st.button("Predict"):
             try:
-                predict_format = json.dumps(inputs)
-                prediction = get_prediction(predict_format)
-                y_pred_proba = prediction["data"]["ndarray"][-1][-1]
-                if y_pred_proba > mean_fraud_rate:
+                prediction = get_prediction(inputs)
+                if prediction > mean_fraud_rate:
                     st.error(
-                        f":oncoming_police_car: Halt! The passed transaction has a {100*y_pred_proba:.2f}% probability of being fraudulent"
+                        f":oncoming_police_car: Halt! The passed transaction has a {100*prediction:.2f}% probability of being fraudulent"
                     )
                 else:
                     st.success(
-                        f":tada: Success! The passed transaction has a {100*y_pred_proba:.2f}% probability of being fraudulent"
+                        f":tada: Success! The passed transaction has a {100*prediction:.2f}% probability of being fraudulent"
                     )
             except Exception as e:
                 logger.error(e)
@@ -155,7 +153,7 @@ def main():
 
     ##### :rewind: Recreate a Historical Transaction
 
-    Replicate an example from the training data to see what the model evaluated the probability of fraud to be. This can be used as a baseline configuration
+    Replicate an example from the training data to see with what probability the model believes the transaction to be fraudulent. This can be used as a baseline configuration
     from which you can manipulate the sliders to create a new, counterfactual transaction.
 
     ##### :game_die: Random Historical Transaction
@@ -227,9 +225,11 @@ def get_mean_value(data):
     return data.mean()
 
 
-@st.cache
-def get_prediction(data: str) -> dict:
-    pass
+def get_prediction(data: list[list[float]]) -> float:
+    model_uri = os.environ.get("MODEL_ENDPOINT_URI")
+    data_json = {"data": {"ndarray": data}}
+    response = requests.post(model_uri, json=data_json)
+    return response.json()["data"]["ndarray"][0][-1]
 
 
 if __name__ == "__main__":

@@ -2,14 +2,11 @@
 Helpers for accessing sample data etc
 """
 import pandas as pd
-from zenml.logger import get_logger
 
 from src.util import columns
 from src.util import path
 from src.util.preprocess import split_data_by_quantile
 
-
-logger = get_logger(__name__)
 
 BUCKET_URL = "***REMOVED***"
 DEFAULT_OBJECT_NAME = "bs140513_032310.csv"
