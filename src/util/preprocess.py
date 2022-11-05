@@ -1,9 +1,9 @@
+"""Preprocess definition"""
 from typing import Callable
-from typing import Protocol
 
 import pandas as pd
+from sklearn.ensemble._forest import ForestClassifier
 
-from src.materializer.types import TreeBasedModel
 from src.util import columns
 
 cat_columns = ["customer", "age", "gender", "merchant", "category"]
@@ -301,6 +301,7 @@ def get_max_group_count(data: pd.Series) -> int:
 def mean_category_amount_previous_step(
     data: pd.DataFrame, category: str, step: str, amount: str
 ) -> pd.Series:
+    """Gets the mean category amount of previous step"""
     data = data.loc[:, [category, step, amount]].copy()
     amount_transacted_daily_by_category = (
         data.groupby([category, step])[amount]
@@ -323,7 +324,7 @@ def get_column_indices(data: pd.DataFrame, cols: list[str]) -> list[int]:
 
 
 def get_feature_importances(
-    model: TreeBasedModel, X_train: pd.DataFrame
+    model: ForestClassifier, X_train: pd.DataFrame
 ) -> dict[str, float]:
     """Retrieves the feature importances from a tree-based model by feature"""
     return {

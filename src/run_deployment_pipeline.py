@@ -55,13 +55,16 @@ def main(
 ):
     """Run the Seldon example continuous deployment or inference pipeline
     Example usage:
-        python run.py --deploy --predict --min-f1 0.8
+        python src/run_deployment_pipeline.py --deploy --predict --min-f1 0.8
     """
     model_name = "model"
-    deployment_pipeline_name = "continuous_deployment_pipeline"
+    deployment_pipeline_name = "continuous_deployment_pipeline_3"
     deployer_step_name = "seldon_model_deployer_step"
 
-    seldon_implementation = "LIGHTGBM_SERVER"
+    seldon_implementation = "SKLEARN_SERVER"
+
+    model_deployer = SeldonModelDeployer.get_active_model_deployer()
+    logger.info(f"Active Model Deployer is: {model_deployer}")
 
     if deploy:
         deployment_trigger_ = deployment_trigger(
@@ -69,7 +72,7 @@ def main(
                 min_f1_score=min_f1,
             )
         )
-        model_deployer = seldon_model_deployer_step(
+        model_deployer_step = seldon_model_deployer_step(
             params=SeldonDeployerStepParameters(
                 service_config=SeldonDeploymentConfig(
                     model_name=model_name,
@@ -79,7 +82,7 @@ def main(
                 timeout=120,
             )
         )
-        run_deployment_pipeline(deployment_trigger_, model_deployer)
+        run_deployment_pipeline(deployment_trigger_, model_deployer_step)
 
     if predict:
         prediction_service_loader_ = prediction_service_loader(
@@ -91,8 +94,7 @@ def main(
         )
         predict(prediction_service_loader_)
 
-    active_model_deployer = SeldonModelDeployer.get_active_model_deployer()
-    services = active_model_deployer.find_model_server(
+    services = model_deployer.find_model_server(
         pipeline_name=deployment_pipeline_name,
         pipeline_step_name=deployer_step_name,
         model_name=model_name,

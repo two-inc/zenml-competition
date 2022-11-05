@@ -1,13 +1,12 @@
+"""Definition of the materializer"""
 import os
 import pickle
 from typing import Any
 from typing import Type
 from typing import Union
 
-import lightgbm as lgb
 import numpy as np
 import pandas as pd
-from sklearn.calibration import CalibratedClassifierCV
 from zenml.artifacts import DataArtifact
 from zenml.io import fileio
 from zenml.materializers.base_materializer import BaseMaterializer
@@ -25,14 +24,14 @@ class CompetitionMaterializer(BaseMaterializer):
         np.ndarray,
         pd.Series,
         pd.DataFrame,
-        lgb.LGBMClassifier,
+        bool,
     ]
 
     ASSOCIATED_ARTIFACT_TYPES = (DataArtifact,)
 
     def handle_input(
         self, data_type: Type[Any]
-    ) -> Union[str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier]:
+    ) -> Union[str, np.ndarray, pd.Series, pd.DataFrame, bool]:
         """
         Loads the model from the artifact and returns it.
         Args:
@@ -46,9 +45,7 @@ class CompetitionMaterializer(BaseMaterializer):
 
     def handle_return(
         self,
-        obj: Union[
-            str, np.ndarray, pd.Series, pd.DataFrame, lgb.LGBMClassifier
-        ],
+        obj: Union[str, np.ndarray, pd.Series, pd.DataFrame, bool],
     ) -> None:
         """
         Saves the model to the artifact store.
