@@ -8,6 +8,7 @@ from src.steps.evaluator import evaluator
 from src.steps.importer import importer
 from src.steps.trainer import trainer
 from src.steps.transformer import transformer
+from src.steps.drift_detector import drift_detector
 
 logger = get_logger(__name__)
 
@@ -17,6 +18,7 @@ def run_training_pipeline() -> None:
     pipeline = train_pipeline(
         importer().configure(output_materializers=CompetitionMaterializer),
         transformer(),
+        drift_detector,
         trainer(),
         evaluator(),
     )
