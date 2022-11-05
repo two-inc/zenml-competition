@@ -33,8 +33,6 @@ jobs:
                   python3 -m pip install -r test-requirements.txt
               env:
                   GITHUB_TOKEN: ${{ secrets.BOT_PERSONAL_ACCESS_TOKEN }}
-                  BUCKET_URL: ${{ secrets.BUCKET_URL }}
-                  DEFAULT_OBJECT_NAME: ${{ secrets.DEFAULT_OBJECT_NAME }}
             - name: Run tests
               run: |
                   export PYTHONPATH=./src:./tests
