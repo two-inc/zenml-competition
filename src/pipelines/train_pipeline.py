@@ -2,7 +2,6 @@
 Training pipeline
 """
 from zenml.pipelines import pipeline
-from evidently.model_profile import Profile
 
 from src.util.settings import docker_settings
 import pandas as pd
