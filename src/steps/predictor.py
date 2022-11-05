@@ -1,6 +1,5 @@
 """Definition of the Predictor Step"""
 import json
-from typing import cast
 
 import numpy as np
 import pandas as pd
