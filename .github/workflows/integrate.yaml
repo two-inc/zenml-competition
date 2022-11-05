@@ -70,12 +70,13 @@ jobs:
                   # Your ML workflow goes here
                   pip install -r requirements.txt
                   export PYTHONPATH="$GITHUB_WORKSPACE"
-                  python src/pipelines/train_pipeline.py
-                  touch src/data/outputs/metrics.txt
+                  python src/run_train_pipeline.py
             - name: Create CML report
               env:
                   REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   # Post reports as comments in GitHub PRs
+                  touch src/data/outputs/metrics.txt
                   cat src/data/outputs/metrics.txt >> report.md
                   cml comment create --pr report.md
+              if: github_even_name == 'pull_request'
