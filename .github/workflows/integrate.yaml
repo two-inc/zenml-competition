@@ -79,4 +79,4 @@ jobs:
                   touch src/data/outputs/metrics.txt
                   cat src/data/outputs/metrics.txt >> report.md
                   cml comment create --pr report.md
-              if: github_event_name == 'pull_request'
+              if: github.event_name == 'pull_request'
