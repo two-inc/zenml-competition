@@ -8,7 +8,7 @@ from src.util.preprocess import get_preprocessed_data
 from src.util.preprocess import train_test_split_by_step
 
 
-@step(enable_cache=True)
+@step(enable_cache=False)
 def transformer(
     data: pd.DataFrame,
 ) -> Output(

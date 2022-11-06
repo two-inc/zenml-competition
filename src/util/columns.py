@@ -61,13 +61,11 @@ AMOUNT_MOVING_MAX: list[str] = [
 MEAN_CATEGORY_AMOUNT_PREVIOUS_STEP: str = "mean_category_amount_previous_step"
 
 FRAUD_COMMITED_MEAN: list[str] = [
-    "customer_fraud_commited_mean",
     "merchant_fraud_commited_mean",
     "category_fraud_commited_mean",
 ]
 
 NUMERICAL: list[str] = [
-    STEP,
     AMOUNT,
     MEAN_CATEGORY_AMOUNT_PREVIOUS_STEP,
     *CUSTOMER_AMOUNT_MAV,
