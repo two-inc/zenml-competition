@@ -30,7 +30,7 @@ To enable the aforementioned pipelines, we made use of the following ZenML Stack
 >
 > **Model Deployer**: [Seldon](https://www.seldon.io/)
 
-## Usage
+## :wrench: Usage
 
 There are a number of ways of interacting with the code in this repository:
 1. Executing the Training & Continuous Deployment Pipelines
@@ -95,7 +95,7 @@ To recreate the app on your local machine, you must:
 
 
 
-## Repository Structure
+## :file_folder: Repository Structure
 ```
 ├── .github				<- CI Pipeline Definition
 ├── src
