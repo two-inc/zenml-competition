@@ -6,7 +6,6 @@ from zenml.client import Client
 from zenml.logger import get_logger
 from zenml.steps import step
 
-from src.util import path
 from src.util.tracking import experiment_tracker_name
 from src.util.tracking import get_classification_metrics
 
@@ -41,9 +40,5 @@ def evaluator(
 
     logger.info(f"Metric Values:\n{metric_results}")
     mlflow.log_metrics(metric_results)
-
-    path.METRICS_PATH.touch(exist_ok=True)
-    with open(path.METRICS_PATH, "a") as f:
-        f.write(f"{metric_results}")
 
     return metric_results

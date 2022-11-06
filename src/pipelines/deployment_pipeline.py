@@ -1,6 +1,5 @@
 """Definition of the Deployment & Pipeline"""
 import numpy as np
-import pandas as pd
 from evidently.model_profile import Profile
 from zenml.logger import get_logger
 from zenml.pipelines import pipeline
@@ -8,7 +7,6 @@ from zenml.steps import BaseParameters
 from zenml.steps import Output
 from zenml.steps import step
 
-from src.util.path import TRAIN_DATA_PATH
 from src.util.settings import docker_settings
 
 logger = get_logger(__name__)

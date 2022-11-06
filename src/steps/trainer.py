@@ -26,7 +26,7 @@ def trainer(
         ClassifierMixin: Trained Classifier
     """
     model = HistGradientBoostingClassifier(**HGBM_PARAMS)
-    mlflow.log_params("model_type", model.__class__.__name__)
+    mlflow.log_param("model_type", model.__class__.__name__)
     mlflow.log_params(HGBM_PARAMS)
 
     model.fit(X_train, y_train)

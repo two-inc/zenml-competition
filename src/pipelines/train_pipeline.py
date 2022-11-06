@@ -7,7 +7,7 @@ from src.util.settings import docker_settings
 
 
 @pipeline(
-    name="train_pipeline_8",
+    name="train_pipeline_9",
     enable_cache=True,
     settings={"docker": docker_settings},
 )

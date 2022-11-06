@@ -9,4 +9,3 @@ env/
 vertex-ai.yaml
 connect.yaml
 deploy.yaml
-src/data/outputs/metrics.txt
