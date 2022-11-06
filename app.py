@@ -89,6 +89,29 @@ def main():
     This Streamlit App provides a simple interface to interact with the model developed using the
     [Synthetic data from a financial payment system](https://www.kaggle.com/datasets/ealaxi/banksim1) dataset as part of the ZenML Month of MLOps Competition.
 
+    ### :question: Interacting with the Model
+
+    You can submit pseudo-transactions to the model using the sidebar interface on this app. There are three ways of defining a transaction:
+
+    ##### :rewind: Recreate a Historical Transaction
+
+    Replicate an example from the training data to see with what probability the model believes the transaction to be fraudulent. This can be used as a baseline configuration
+    from which you can manipulate the sliders to create a new, counterfactual transaction.
+
+    ##### :game_die: Random Historical Transaction
+
+    Randomly select a historical transaction from the data. This can be used as a baseline configuration
+    from which you can manipulate the sliders to create a new, counterfactual transaction.
+
+    ##### :point_right: Input Values
+
+    Define the input values to the model for the transaction yourself. You can change each slider's values even if you have previously replicated a historical transaction explicitly,
+    or randomly selected one.
+
+    ##### :crystal_ball: Predict
+
+    After defining the specific attributes of your transaction, push the `Predict` button to fire off a request to the deployed model, and see how it responds!
+
     The model and application were developed via the ZenML framework via two pipelines, the **Training Pipeline** and **Continuous Deployment Pipeline**, which will be described briefly below
     before outlining how to interact with this application.
 
@@ -147,28 +170,6 @@ def main():
     - Provided that the deployment trigger has been triggered, the model trained upstream is then deployed to a dedicated API endpoint
     - In this application, the model has been deployed on a Kubernetes Cluster using [Seldon](https://www.seldon.io/)
 
-    ### :question: Interacting with the Model
-
-    You can submit pseudo-transactions to the model using the sidebar interface on this app. There are three ways of defining a transaction:
-
-    ##### :rewind: Recreate a Historical Transaction
-
-    Replicate an example from the training data to see with what probability the model believes the transaction to be fraudulent. This can be used as a baseline configuration
-    from which you can manipulate the sliders to create a new, counterfactual transaction.
-
-    ##### :game_die: Random Historical Transaction
-
-    Randomly select a historical transaction from the data. This can be used as a baseline configuration
-    from which you can manipulate the sliders to create a new, counterfactual transaction.
-
-    ##### :point_right: Input Values
-
-    Define the input values to the model for the transaction yourself. You can change each slider's values even if you have previously replicated a historical transaction explicitly,
-    or randomly selected one.
-
-    ##### :crystal_ball: Predict
-
-    After defining the specific attributes of your transaction, push the `Predict` button to fire off a request to the deployed model, and see how it responds!
 
     """
     )
@@ -179,6 +180,9 @@ def get_data() -> pd.DataFrame:
     """Retrieves the 'Synthetic data from financial payment system' data such that historical transactions can be replicated within the App"""
     data = load_data()
     return get_preprocessed_data(data)
+
+
+MAX_VALUE_LIMITS = [0, 10, 50, 100, 500, 1_000, 5_000, 10_000]
 
 
 def get_inputs(
@@ -193,15 +197,21 @@ def get_inputs(
 
     def get_slider(data: pd.DataFrame, col: str):
         d = data.loc[:, col]
-        min = get_min_value(d)
-        max = get_max_value(d)
+        max_ = get_max_value(d)
+        for limit in MAX_VALUE_LIMITS:
+            if limit > max_:
+                max_ = limit
+                break
         if transaction is not None:
             value = get_mean_value(transaction[col])
         else:
             value = get_mean_value(d)
         t = int if d.dtype == int else float
         return st.slider(
-            col, min_value=t(min), max_value=t(max), value=t(value)
+            columns.USER_FRIENDLY_COLUMN_NAMES.get(col, col),
+            min_value=t(0),
+            max_value=t(max_),
+            value=t(value),
         )
 
     return [[get_slider(data, col) for col in columns.NUMERICAL]]

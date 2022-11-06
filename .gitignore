@@ -167,3 +167,4 @@ deploy.yaml
 connect.yaml
 vertex-ai.yaml
 src/data/outputs/metrics.txt
+.DS_Store

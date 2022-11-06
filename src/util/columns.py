@@ -81,3 +81,38 @@ NUMERICAL: list[str] = [
 ]
 
 MODEL = [*NUMERICAL, *CATEGORICAL]
+
+
+USER_FRIENDLY_COLUMN_NAMES: dict[str, str] = {
+    "customer_amount_mstd_total": "Customer's Moving Transaction Amount Standard Deviation (Total)",
+    "customer_amount_mstd_10": "Customer's Moving Transaction Amount Standard Deviation (Last 10 Transactions)",
+    "customer_amount_mstd_5": "Customer's Moving Transaction Amount Standard Deviation (Last 5 Transactions)",
+    "step": "Simulated Day",
+    "amount": "Transacation Amount",
+    "customer_fraud_commited_mean": "Customer's Moving Proportion of Fraudulent Transactions",
+    "merchant_fraud_commited_mean": "Merchant's Moving Proportion of Fraudulent Transactions",
+    "category_fraud_commited_mean": "Category's Moving Proportion of Fraudulent Transactions",
+    "merchant_amount_moving_max": "Merchant's Moving Maximum Transaction Amount",
+    "customer_amount_moving_max": "Customer's Moving Maximum Transaction Amount",
+    "category_amount_moving_max": "Category's Moving Maximum Transaction Amount",
+    "mean_category_amount_previous_step": "Category's Mean Transaction Amount the Previous Day",
+    "category_amount_mstd_total": "Category's Moving Transaction Amount Standard Deviation (Total)",
+    "category_amount_mstd_100": "Category's Moving Transaction Amount Standard Deviation (Last 100 Transactions)",
+    "category_amount_mstd_10": "Category's Moving Transaction Amount Standard Deviation (Last 10 Transactions)",
+    "category_amount_ma_total": "Category's Moving Transaction Amount Average (Total)",
+    "category_amount_ma_100": "Category's Moving Transaction Amount Average (Last 100 Transactions)",
+    "category_amount_ma_10": "Category's Moving Transaction Amount Average (Last 10 Transactions)",
+    "merchant_amount_mstd_total": "Merchants's Moving Transaction Amount Standard Deviation (Total)",
+    "merchant_amount_mstd_50": "Merchants's Moving Transaction Amount Standard Deviation (Last 50 Transactions)",
+    "merchant_amount_mstd_10": "Merchants's Moving Transaction Amount Standard Deviation (Last 10 Transactions)",
+    "merchant_amount_mstd_5": "Merchants's Moving Transaction Amount Standard Deviation (Last 5 Transactions)",
+    "merchant_amount_mstd_3": "Merchants's Moving Transaction Amount Standard Deviation (Last 3 Transactions)",
+    "merchant_amount_ma_total": "Merchant's Moving Transaction Amount Average (Total)",
+    "merchant_amount_ma_50": "Merchant's Moving Transaction Amount Average (Last 50 Transactions)",
+    "merchant_amount_ma_10": "Merchant's Moving Transaction Amount Average (Last 10 Transactions)",
+    "merchant_amount_ma_5": "Merchant's Moving Transaction Amount Average (Last 5 Transactions)",
+    "merchant_amount_ma_3": "Merchant's Moving Transaction Amount Average (Last 3 Transactions)",
+    "customer_amount_ma_10": "Customer's Moving Transaction Amount Average (Last 10 Transactions)",
+    "customer_amount_ma_5": "Customer's Moving Transaction Amount Average (Last 5 Transactions)",
+    "customer_amount_ma_total": "Customer's Moving Transaction Amount Average (total)",
+}
