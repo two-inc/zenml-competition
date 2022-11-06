@@ -121,8 +121,8 @@ To recreate the app on your local machine, you must:
 ```
 
 ## :technologist: Competition Participants
-- @dgjlindsay
-- @joeolaide
-- @JWorthington97
-- @shelmigtwo
-- @vangelis-two
+- [@dgjlindsay](https://github.com/dgjlindsay)
+- [@joeolaide](https://github.com/joeolaide)
+- [@JWorthington97](https://github.com/JWorthington97)
+- [@shelmigtwo](https://github.com/shelmigtwo)
+- [@vangelis-two](https://github.com/vangelis-two)
