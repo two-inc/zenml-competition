@@ -24,6 +24,12 @@ def main():
     mean_fraud_rate = get_mean_value(data.fraud)
 
     with st.sidebar:
+        st.markdown("### :crystal_ball: Generate Prediction")
+
+        predict = st.button("Predict")
+
+        st.markdown("----------------")
+
         st.markdown("### :rewind: Recreate a Historical Transaction")
         min_transaction = get_min_value(data.index)
         max_transaction = get_max_value(data.index)
@@ -63,22 +69,20 @@ def main():
 
         st.markdown("----------------")
 
-        st.markdown("### :crystal_ball: Generate Prediction")
-
-        if st.button("Predict"):
-            try:
-                prediction = get_prediction(inputs)
-                if prediction > mean_fraud_rate:
-                    st.error(
-                        f":oncoming_police_car: Halt! The passed transaction has a {100*prediction:.2f}% probability of being fraudulent"
-                    )
-                else:
-                    st.success(
-                        f":tada: Success! The passed transaction has a {100*prediction:.2f}% probability of being fraudulent"
-                    )
-            except Exception as e:
-                logger.error(e)
-                st.error("An unknown error occurred, please try again later")
+    if predict:
+        try:
+            prediction = get_prediction(inputs)
+            if prediction > mean_fraud_rate:
+                st.error(
+                    f":oncoming_police_car: Halt! The passed transaction has a {100*prediction:.2f}% probability of being fraudulent"
+                )
+            else:
+                st.success(
+                    f":tada: Success! The passed transaction has a {100*prediction:.2f}% probability of being fraudulent"
+                )
+        except Exception as e:
+            logger.error(e)
+            st.error("An unknown error occurred, please try again later")
 
     st.title(":mag: Detecting Fraudulent Financial Transactions with ZenML")
 

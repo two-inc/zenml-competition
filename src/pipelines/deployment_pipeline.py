@@ -66,7 +66,7 @@ def deployment_trigger(
 
 
 @pipeline(
-    name="continuous_deployment_pipeline_4",
+    name="continuous_deployment_pipeline_5",
     enable_cache=True,
     settings={"docker": docker_settings},
 )
