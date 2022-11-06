@@ -23,6 +23,7 @@ def main():
     data = get_data()
     mean_fraud_rate = get_mean_value(data.fraud)
 
+    predict = None
     with st.sidebar:
         st.title(":computer: Model Interface")
         st.markdown("### :crystal_ball: Generate Prediction")
@@ -56,12 +57,15 @@ def main():
 
         if replicate_transaction:
             transaction = data.loc[transaction_number, :]
+            st.session_state["transaction"] = transaction
         elif random_transaction:
             transaction_number = st.session_state["rn"]
             transaction = data.loc[transaction_number, :]
+            st.session_state["transaction"] = transaction
             st.write(f"Replicating Transaction #{transaction_number}")
         else:
-            transaction = None
+            transaction = st.session_state.get("transaction")
+
         st.markdown("----------------")
 
         st.markdown("### :point_right: Input Values")
