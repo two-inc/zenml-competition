@@ -24,6 +24,7 @@ def main():
     mean_fraud_rate = get_mean_value(data.fraud)
 
     with st.sidebar:
+        st.title(":computer: Model Interface")
         st.markdown("### :crystal_ball: Generate Prediction")
 
         predict = st.button("Predict")
@@ -91,45 +92,83 @@ def main():
     st.markdown(
         """
     This Streamlit App provides a simple interface to interact with the model developed using the
-    [Synthetic data from a financial payment system](https://www.kaggle.com/datasets/ealaxi/banksim1) dataset as part of the ZenML Month of MLOps Competition.
+    [Synthetic data from a financial payment system](https://www.kaggle.com/datasets/ealaxi/banksim1) dataset as part of the [ZenML](https://zenml.io/home) [Month of MLOps Competition](https://blog.zenml.io/mlops-competition/).
 
-    ### :question: Interacting with the Model
+    The model is trained on a simulated dataset representing the transactions registered with a financial payment system provider. In particular, the model input features were engineered to provide the model with the necessary context on payment patterns associated with the customer, merchant and industry involved in a given transaction.
+
+    ## :question: Interacting with the Model
 
     You can submit pseudo-transactions to the model using the sidebar interface on this app. There are three ways of defining a transaction:
 
     ##### :rewind: Recreate a Historical Transaction
 
-    Replicate an example from the training data to see with what probability the model believes the transaction to be fraudulent. This can be used as a baseline configuration
-    from which you can manipulate the sliders to create a new, counterfactual transaction.
+    Replicate the feature inputs for an explicitly selected historical transaction.
 
     ##### :game_die: Random Historical Transaction
 
-    Randomly select a historical transaction from the data. This can be used as a baseline configuration
-    from which you can manipulate the sliders to create a new, counterfactual transaction.
+    Replicate the feature inputs for a randomly selected historical transaction.
 
     ##### :point_right: Input Values
 
-    Define the input values to the model for the transaction yourself. You can change each slider's values even if you have previously replicated a historical transaction explicitly,
-    or randomly selected one.
+    Define the input values to the model yourself. You can change each slider's values even if you have replicated a historical transaction, either explicitly or randomly.
 
     ##### :crystal_ball: Predict
 
     After defining the specific attributes of your transaction, push the `Predict` button to fire off a request to the deployed model, and see how it responds!
 
-    The model and application were developed via the ZenML framework via two pipelines, the **Training Pipeline** and **Continuous Deployment Pipeline**, which will be described briefly below
-    before outlining how to interact with this application.
+    ## :memo: How & Why We Made This
+
+    At [Two](https://www.two.inc/), we make it a priority to keep our finger on the pulse of the ongoing developments in the MLOps space, as we recognize being able to develop, deploy and maintain sophisticated
+    machine learning solutions is critical for the success of our business.
+
+    We have been impressed by the framework developed by the ZenML team, and entered the Month of MLOps competition as part of our efforts to get properly acquainted with the framework and its capabilities.
+
+    For our competition submission, we decided to implement a fraud detection model using ZenML, as we wanted to utilize the framework for a problem similar to the ones that our Data Science organization is tasked with
+    addressing.
+
+    In particular, we made use of the *[Synthetic data from a financial payment system](https://www.kaggle.com/datasets/ealaxi/banksim1)* dataset, made available by Kaggle. In line with the requirements of the competition, we began developing an end-to-end ML solution using ZenML, which was tasked with the following responsibilities:
+    - Importing the Dataset
+    - Cleaning the data & engineering informative features
+    - Detecting data drift of new data
+    - Training a model to detect fraud on a transactional level
+    - Evaluating the performance of the model
+    - Deploying the model to a REST API endpoint
+    - Providing an interface for users to interact with the model
+
+    To address these requirements, we built a Training Pipeline, which we used for experimentation, and a Continuous Deployment pipeline, which extended the capabilities of the Training Pipeline to identify data drift in
+    new data, train a model on all available data, and evaluate the performance of this model prior to deploying this to an API endpoint.
+
+    To enable the aforementioned pipelines, we made use of the following ZenML Stack:
+    > **Artifact Storage**: [Google Cloud Storage](https://cloud.google.com/storage)
+    >
+    > **Container Registry**: [Google Cloud Container Registry](https://cloud.google.com/container-registry)
+    >
+    > **Data Validator**: [EvidentlyAI](https://www.evidentlyai.com/)
+    >
+    > **Experiment Tracker**: [MLFlow](https://mlflow.org/)
+    >
+    > **Orchestrator**: [Google Kuberenetes Engine](https://cloud.google.com/kubernetes-engine)
+    >
+    > **Model Deployer**: [Seldon](https://www.seldon.io/)
+
+    We had a lot of fun implementing this solution using ZenML, and encourage readers to give the framework a try for themselves!
+
 
     ### :bullettrain_side: Training Pipeline
 
-    The Training Pipeline defines the end-to-end process of training the machine learning model to predict whether a given transaction is fraudulent or not.
-    This pipeline is particularly useful compared to an ad-hoc workflow for its reproducibility and maintainability. The artifacts of each stage are automatically
-    saved to the ZenML artifact storage, so we can revisit any model knowing exactly what data it was trained on. Furthermore, thanks to ZenML's integration
-    seamless integration with other MLOps tools, we have integrated our pipeline with the MLFlow Experiment Tracker, giving us visibility on the performance and metadata
-    of each run of our pipeline, and are able to run the pipeline as a sequence of pods on Kubernetes at the click of a button.
+    The Training Pipeline defines the end-to-end process of training our model to predict whether a given transaction is fraudulent or not.
 
-    ##### :inbox_tray: Importer
+    This pipeline is particularly useful compared to an ad-hoc training workflow on account of its reproducibility and maintainability. The artifacts produced by each stage of the pipeline are automatically saved to the ZenML artifact storage, so we can revisit any model knowing exactly what data it was trained on.
 
-    - Responsible for importing the data from a Cloud Storage Bucket
+    Furthermore, thanks to ZenML's infrastructure agnostic design, it was simple to integrate our pipeline with the MLFlow Experiment Tracker, giving us visibility on the performance and metadata of each run of our pipeline, and run the pipeline as a sequence of pods on Kubernetes.
+
+    The Training Pipeline is composed of the following steps:
+
+    ##### :inbox_tray: Baseline Data Importer
+
+    - Responsible for importing the baseline data from a Cloud Storage Bucket
+    - Baseline Data: A subset of our toy dataset to act as the "ground-truth" for the model development phase
+
 
     ##### :wrench: Transformer
 
@@ -144,7 +183,8 @@ def main():
 
     ##### :chart_with_upwards_trend: Evaluator
 
-    - Tests model performance against the held out validation set via the following metrics, with the results tracked in our Experiment Tracker
+    - Tests model performance against the held out validation set and tracks the results in our MLFlow Experiment Tracker
+    - Metrics used to evaluate performance
         - [ROC AUC](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score)
         - [PR AUC](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score)
         - [Precision](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_score.html#sklearn.metrics.precision_score)
@@ -153,26 +193,38 @@ def main():
         - [Brier Score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.brier_score_loss.html#sklearn.metrics.brier_score_loss)
         - [Accuracy](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score)
 
-    By orchestrating all of the steps above, we are able to build a reproducible and maintainable ML pipeline using the ZenML framework,
-    with automated output artifact storage, experiment tracking & remote orchestration easily configurable, if not already baked in!
+    By orchestrating all of the steps above, we were able to build a reproducible and maintainable ML pipeline with automated output artifact storage, step caching, experiment tracking & remote orchestration baked in!
 
 
     ### :recycle: Continuous Deployment Pipeline
 
-    The Continuous Deployment Pipeline is responsible for a more ambitious task than the training pipeline, namely to train a model on some subset of data,
+    Our Continuous Deployment Pipeline is responsible for a more ambitious task than the training pipeline, namely to train a model on some data,
     and deploy that into production, provided that particular acceptance criteria are met regarding the quality of the newly trained model.
 
-    In particular, we extend the training pipeline described above to include two additional steps:
+    In particular, we extend the training pipeline described above to include four additional steps:
+
+    ##### :newspaper: New Data Importer
+    - This step imports an as-yet unseen slice of the toy dataset
+
+    ##### :wavy_dash: Data Drift Detector
+    - Implemented using the EvidentlyAI integration
+    - This step compares the baseline data to the new data and identifies whether there has been significant data drift
+
+    ##### :heavy_plus_sign: Data Combiner
+    - Combines the "baseline" and "new" data to create a unified training dataset for the new model to be trained on
 
     ##### :white_check_mark: Deployment Trigger
 
-    - Evaluates whether the metrics computed on the trained model meet particular acceptance criteria for eventual deployment.
-    - In our Dummy example, we expect any model to have obtained an F1 Score of >0.8
+    - Evaluates whether the metrics computed on the trained model meet particular acceptance criteria for eventual deployment
+    - Additionally verifies that there has been no significant data drift between the baseline data and the newest batch
+
 
     ##### :rocket: Model Deployer
 
     - Provided that the deployment trigger has been triggered, the model trained upstream is then deployed to a dedicated API endpoint
-    - In this application, the model has been deployed on a Kubernetes Cluster using [Seldon](https://www.seldon.io/)
+    - In this application, the model has been deployed on a Kubernetes Cluster using Seldon
+
+    With this pipeline architecture, it is trivial to update our model to the API endpoint exposed by Seldon, all the while ensuring that whichever model we deploy must meet our quality requirements.
 
 
     """
