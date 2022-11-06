@@ -1,6 +1,4 @@
-"""
-Training pipeline
-"""
+"""Definition of the Training Pipeline"""
 from zenml.pipelines import pipeline
 
 from src.util.settings import docker_settings

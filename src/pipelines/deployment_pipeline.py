@@ -1,4 +1,4 @@
-"""Definition of the Deployment & Pipeline"""
+"""Definition of the Deployment Pipeline"""
 import numpy as np
 from evidently.model_profile import Profile
 from zenml.logger import get_logger
