@@ -127,8 +127,7 @@ def main():
 
     We have been impressed by the framework developed by the ZenML team, and entered the Month of MLOps competition as part of our efforts to get properly acquainted with the framework and its capabilities.
 
-    For our competition submission, we decided to implement a fraud detection model using ZenML, as we wanted to utilize the framework for a problem similar to the ones that our Data Science organization is tasked with
-    addressing.
+    For our competition submission, we decided to implement a fraud detection model using ZenML, as we wanted to utilize the framework for a problem similar to the ones that our Data Science team works on.
 
     In particular, we made use of the *[Synthetic data from a financial payment system](https://www.kaggle.com/datasets/ealaxi/banksim1)* dataset, made available by Kaggle. In line with the requirements of the competition, we began developing an end-to-end ML solution using ZenML, which was tasked with the following responsibilities:
     - Importing the Dataset
@@ -160,7 +159,7 @@ def main():
 
     ### :bullettrain_side: Training Pipeline
 
-    The Training Pipeline defines the end-to-end process of training our model to predict whether a given transaction is fraudulent or not.
+    The Training Pipeline defines the end-to-end process of training our model to predict whether a given transaction is fraudulent.
 
     This pipeline is particularly useful compared to an ad-hoc training workflow on account of its reproducibility and maintainability. The artifacts produced by each stage of the pipeline are automatically saved to the ZenML artifact storage, so we can revisit any model knowing exactly what data it was trained on.
 
@@ -178,7 +177,6 @@ def main():
 
     - Applies simple preprocessing techniques to clean up data entries
     - Creates moving averages, standard deviations & max amounts by product category, merchant and customer
-    - Adds the moving merchant and customer transaction count (i.e. transaction number) to each transaction
     - Splits the data according to the `Step` feature, which denotes the simulated day on which transactions took place
 
     ##### :running: Trainer
@@ -202,8 +200,7 @@ def main():
 
     ### :recycle: Continuous Deployment Pipeline
 
-    Our Continuous Deployment Pipeline is responsible for a more ambitious task than the training pipeline, namely to train a model on some data,
-    and deploy that into production, provided that particular acceptance criteria are met regarding the quality of the newly trained model.
+    Our Continuous Deployment Pipeline is responsible for a more ambitious task than the training pipeline, namely to train a model on some data, and deploy it to a REST API endpoint, provided that particular acceptance criteria are met regarding the quality of the newly trained model.
 
     In particular, we extend the training pipeline described above to include four additional steps:
 
@@ -228,9 +225,7 @@ def main():
     - Provided that the deployment trigger has been triggered, the model trained upstream is then deployed to a dedicated API endpoint
     - In this application, the model has been deployed on a Kubernetes Cluster using Seldon
 
-    With this pipeline architecture, it is trivial to update our model to the API endpoint exposed by Seldon, all the while ensuring that whichever model we deploy must meet our quality requirements.
-
-
+    With this pipeline architecture, it is trivial to update our model to the API endpoint exposed by Seldon, all the while ensuring that whichever model we deploy meets our performance requirements.
     """
     )
 
