@@ -9,8 +9,7 @@ concurrency:
 
 jobs:
     interrogate:
-        runs-on: self-hosted
-        timeout-minutes: 20
+        runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -21,9 +20,7 @@ jobs:
                   fail-under: 80
 
     pytest:
-        runs-on: self-hosted
-        container:
-            image: python:3.9
+        runs-on: ubuntu-latest
         steps:
             - name: Check out repository code
               uses: actions/checkout@v2
