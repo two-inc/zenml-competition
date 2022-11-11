@@ -1,4 +1,4 @@
-# :shinto_shrine: Two ZenML Competition Solution
+# :shinto_shrine: Detecting Fraudulent Financial Transactions with ZenML
 
 This repository contains Two's Solution to the [ZenML Month of MLOps Competition](https://blog.zenml.io/mlops-competition/).
 
