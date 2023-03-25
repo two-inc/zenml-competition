@@ -12,6 +12,6 @@ pandas==1.5.1
 python-dotenv==0.21.0
 scikit-learn==0.24.2
 seldon-core==1.14.1
-tensorflow==2.8.1
+tensorflow==2.11.1
 tensorflow-io==0.27.0
 zenml==0.20.5
