@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
     interrogate:
-        runs-on: ubuntu-latest
+        runs-on: ${{ vars.RUNNER_STANDARD }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -20,7 +20,7 @@ jobs:
                   fail-under: 80
 
     pytest:
-        runs-on: ubuntu-latest
+        runs-on: ${{ vars.RUNNER_STANDARD }}
         steps:
             - name: Check out repository code
               uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
 
 
     black:
-        runs-on: ubuntu-latest
+        runs-on: ${{ vars.RUNNER_STANDARD }}
         steps:
             - uses: actions/checkout@v2
             - uses: psf/black@stable
